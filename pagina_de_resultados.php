@@ -159,7 +159,7 @@
                 </li>
                 <li class="list-group-item"> <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
-                        Launch demo modal
+                        TAGS
                     </button>
 
                     <!-- Modal -->
@@ -174,11 +174,11 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <h4>Linguagens de programação</h4>
-                                    <input type="checkbox" name="java" id="java" value="java">
-                                    <label for="java">Java</label>
-                                    <input type="checkbox" name="php" id="php" value="php">
-                                    <label for="php">PHP</label>
+                                    <?php
+                                        include "funcoes_result.php";
+                                        $func = new resultados();
+                                        $func->show_tags();
+                                    ?>
                                 </div>
                                 <div class="modal-body">
                                     <h4>Topico</h4>
@@ -198,7 +198,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
                                 </div>
                             </div>
                         </div>
@@ -206,7 +206,12 @@
                 </li>
                 <li class="list-group-item">
                     <h4>Data</h4>
-                    <input type="range" id="ano" name="ano" min="2020" max="2024" step="1">
+                    <select name="pets" id="pet-select">
+                        <option value="">Escolha a data</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                    </select>
                     <span id="valorAno"></span>
                 </li>
                 <li class="list-group-item"> <a href="#" class="card-link">Another link</a></li>
@@ -229,12 +234,12 @@
 
     <main>
         <?php
-            
-            include "funcoes_result.php";
 
-           $func = new resultados();
+        
 
-           $func->result();
+        $func = new resultados();
+
+        $func->result();
 
         ?>
     </main>

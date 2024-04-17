@@ -69,6 +69,9 @@
         .teste {
             height: 300px;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -86,40 +89,72 @@
             $id_post = $_GET['id'];
             $func->post_display($id_post);
         }
+        ?>
 
-        
+        <?php
 
+
+        $func = new resultados();
+        if (isset($_GET['id'])) {
+            $id_post = $_GET['id'];
+            $func->post_resp($id_post);
+        }
 
         ?>
 
         <div class="resp">
-            ops
-            <br>
-            <div class="coment">
 
-                <form action="">
-                    <label for="comentario">Comentario</label>
-                    <textarea placeholder="Escreva o comentario aqui" id="Comentario_resps"></textarea>
-                    <br>
-                    <button type="button" class="btn btn-info">Botao</button>
-                    
-                </form>
+            <div class="container_area_texto">
+                <button id="toggleRespForm" class="btn btn-primary">Adicionar Resposta</button>
+                
+                    <form action="comentario" method="POST" id="respForm" class="area_texto hidden">
+                        <label for="resp">Resposta</label>
+                        <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
+                        <br>
+                        <button type="submit" class="btn btn-info">Botao</button>
+                    </form>
+                
+
+                
+
+
+                <?php
+
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    $resp_body = $_POST['resp_body'];
+                    if (isset($_GET['id'])) {
+                        $id_post = $_GET['id'];
+                        $func->Answer($resp_body, $id_post);
+
+
+
+                    }
+
+
+
+                }
+
+
+                ?>
                 <br>
+
+                
             </div>
+
+            <br>
+                <button id="toggleCommentForm" class="btn btn-info">Adicionar Comentário</button>
+                <div class="container_area_texto" id="commentForm" class="area_texto hidden">
+                    <form action="comentario" id="comentForm" class="area_texto hidden">
+                        <div class="area_texto">
+                            <textarea id="Comentario_resps" placeholder="Escreva o comentario aqui "></textarea>
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-danger">Enviar</button>
+                    </form>
+                </div>
         </div>
     </div>
-    <br>
-    <div class="container_area_texto">
-        <form action="#">
-            <div class="area_texto">
-                <textarea id="id_teste" placeholder="Escreva Sua resposta aqui">
 
-                </textarea>
-            </div>
-            <br>
-            <button type="button" class="btn btn-danger">Botao</button>
-        </form>
-    </div>
     <script>
         tinymce.init({
             selector: 'textarea#id_teste',
@@ -154,6 +189,37 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js">
         document.addEventListener('DOMContentLoaded', function () {
             Prism.highlightAll();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Adiciona um evento de clique ao botão para alternar a exibição do formulário de comentário
+            document.getElementById('toggleRespForm').addEventListener('click', function () {
+                // Seleciona o formulário de comentário
+                var respForm = document.getElementById('respForm');
+                // Verifica se o formulário está oculto
+                if (respForm.classList.contains('hidden')) {
+                    // Torna o formulário visível
+                    respForm.classList.remove('hidden');
+                } else {
+                    // Oculta o formulário
+                    respForm.classList.add('hidden');
+                }
+            },
+
+                document.getElementById('toggleCommentForm').addEventListener('click', function () {
+
+                    var commentForm = document.getElementById('comentForm');
+                    // Verifica se o formulário está oculto
+                    if (commentForm.classList.contains('hidden')) {
+                        // Torna o formulário visível
+                        commentForm.classList.remove('hidden');
+                    } else {
+                        // Oculta o formulário
+                        commentForm.classList.add('hidden');
+                    }
+                }));
         });
     </script>
 

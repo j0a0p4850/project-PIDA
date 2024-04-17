@@ -1,86 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seleção de Tags</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Estilos para as tags selecionadas */
-        .tag {
-            display: inline-block;
-            background-color: #f0f0f0;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet">
 </head>
 
 <body>
 
-    <form id="checkboxForm" action="" method="post">
-        <label><input type="checkbox" name="tags[]" value="Tag 1"> Tag 1</label>
-        <label><input type="checkbox" name="tags[]" value="Tag 2"> Tag 2</label>
-        <label><input type="checkbox" name="tags[]" value="Tag 3"> Tag 3</label>
-        <label><input type="checkbox" name="tags[]" value="Tag 4"> Tag 4</label>
-        <button type="submit">Enviar</button>
-    </form>
+    <h1>Exemplo de área de código com botão de cópia</h1>
 
-    <div id="tagsContainer">
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (isset ($_POST['tags']) && is_array($_POST['tags'])) {
-                $tags = $_POST['tags'];
-                // Retorna as tags selecionadas em formato JSON
-                echo json_encode($tags);
-            } else {
-                echo json_encode(array());
+    <div class="code-container">
+        <pre><code class="language-php">
+            <?php
+            // Seu código PHP aqui
+            if(isset($_POST['codigo'])){
+            echo htmlspecialchars($_POST['codigo']);
+            } 
+            else{
+                echo "Não há nenhum codigo";
             }
-        } else {
-            echo "Acesso inválido.";
-        }
-        ?>
-
-
+            ?>
+        </code></pre>
+        <button onclick="copyCode()">Copiar Código</button>
     </div>
 
-    <script src="script.js">
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("checkboxForm");
-            const tagsContainer = document.getElementById("tagsContainer");
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <textarea name="codigo" rows="10" cols="50" placeholder="Digite seu código aqui"></textarea>
+        <br>
+        <input type="submit" value="Enviar">
+    </form>
 
-            form.addEventListener('submit', function (event) {
-                event.preventDefault(); // Evita que o formulário seja enviado da maneira padrão
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-php.js"></script>
 
-                const formData = new FormData(this);
+    <script>
+        function copyCode() {
+            var codeBlock = document.querySelector('.code-container code');
+            var codeText = codeBlock.innerText || codeBlock.textContent;
 
-                // Envia os dados do formulário para o PHP usando AJAX
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "processar.php", true);
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const tags = JSON.parse(xhr.responseText);
-                        showTags(tags);
-                    }
-                };
-                xhr.send(formData);
-            });
-
-            function showTags(tags) {
-                tagsContainer.innerHTML = ""; // Limpa o conteúdo anterior
-
-                tags.forEach(function (tag) {
-                    const tagElement = document.createElement("div");
-                    tagElement.className = "tag";
-                    tagElement.textContent = tag;
-                    tagsContainer.appendChild(tagElement);
+            navigator.clipboard.writeText(codeText)
+                .then(function () {
+                    console.log('Copiado com sucesso')
+                })
+                .catch(function () {
+                    alert("Erro ao copiar o código.");
                 });
-            }
-        });
-
+        }
     </script>
+
 </body>
 
 </html>
