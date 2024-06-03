@@ -1,3 +1,7 @@
+<?php
+session_start();
+include "funcoes_result.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -69,9 +73,7 @@
         .teste {
             height: 300px;
         }
-        .hidden {
-            display: none;
-        }
+        
     </style>
 </head>
 
@@ -79,15 +81,12 @@
 
     <div class="container">
         <?php
-
-        include "funcoes_result.php";
-
-        session_start();
         $func = new resultados();
-
-        if (isset($_GET['id'])) {
+        
+        if (isset($_GET['id']) && isset($_SESSION['login'])) {
+            $id_user = $_SESSION['login'];
             $id_post = $_GET['id'];
-            $func->post_display($id_post);
+            $func->post_display($id_post, $id_user);
         }
         ?>
 
@@ -95,9 +94,10 @@
 
 
         $func = new resultados();
-        if (isset($_GET['id'])) {
+        if (isset($_GET['id'])  && isset($_SESSION['login'])) {
+            $id_user = $_SESSION['login'];
             $id_post = $_GET['id'];
-            $func->post_resp($id_post);
+            $func->post_resp($id_post, $id_user);
         }
 
         ?>
@@ -105,29 +105,21 @@
         <div class="resp">
 
             <div class="container_area_texto">
-                <button id="toggleRespForm" class="btn btn-primary">Adicionar Resposta</button>
                 
-                    <form action="comentario" method="POST" id="respForm" class="area_texto hidden">
+                    <form action="#" method="POST" id="respForm" class="area_texto hidden">
                         <label for="resp">Resposta</label>
                         <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
                         <br>
                         <button type="submit" class="btn btn-info">Botao</button>
                     </form>
-                
-
-                
-
 
                 <?php
-
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $resp_body = $_POST['resp_body'];
-                    if (isset($_GET['id'])) {
+                    if (isset($_GET['id'])  && isset($_SESSION['login'])) {
+                        $id_user = $_SESSION['login'];
                         $id_post = $_GET['id'];
-                        $func->Answer($resp_body, $id_post);
-
-
-
+                        $func->Answer($resp_body, $id_post, $id_user);
                     }
 
 
@@ -142,7 +134,7 @@
             </div>
 
             <br>
-                <button id="toggleCommentForm" class="btn btn-info">Adicionar Comentário</button>
+                
                 <div class="container_area_texto" id="commentForm" class="area_texto hidden">
                     <form action="comentario" id="comentForm" class="area_texto hidden">
                         <div class="area_texto">
@@ -151,6 +143,21 @@
                         <br>
                         <button type="button" class="btn btn-danger">Enviar</button>
                     </form>
+                    
+
+                    <!-- Dando erro -->
+                    <?php
+
+                //if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    //$coment = $_POST['coment'];
+                    //if (isset($_GET['id'])) {
+                        //$id_post = $_GET['id'];
+                        //$func->Answer($coment, $id_post, $resposta);
+                    //}
+                //}
+
+
+                ?>
                 </div>
         </div>
     </div>
@@ -192,36 +199,7 @@
         });
     </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Adiciona um evento de clique ao botão para alternar a exibição do formulário de comentário
-            document.getElementById('toggleRespForm').addEventListener('click', function () {
-                // Seleciona o formulário de comentário
-                var respForm = document.getElementById('respForm');
-                // Verifica se o formulário está oculto
-                if (respForm.classList.contains('hidden')) {
-                    // Torna o formulário visível
-                    respForm.classList.remove('hidden');
-                } else {
-                    // Oculta o formulário
-                    respForm.classList.add('hidden');
-                }
-            },
-
-                document.getElementById('toggleCommentForm').addEventListener('click', function () {
-
-                    var commentForm = document.getElementById('comentForm');
-                    // Verifica se o formulário está oculto
-                    if (commentForm.classList.contains('hidden')) {
-                        // Torna o formulário visível
-                        commentForm.classList.remove('hidden');
-                    } else {
-                        // Oculta o formulário
-                        commentForm.classList.add('hidden');
-                    }
-                }));
-        });
-    </script>
+    
 
 </body>
 

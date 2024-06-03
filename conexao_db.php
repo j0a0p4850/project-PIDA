@@ -8,6 +8,7 @@
     private $banco = "db_site_pr";
     private $porta = "3306";
     private $conecta;
+
     
     function __construct() {
         

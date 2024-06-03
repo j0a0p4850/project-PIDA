@@ -75,6 +75,7 @@
 
                         <div class="modal-body">
                             <?php
+                            session_start();
                             include 'funcoes_result.php';
                             $func = new resultados();
                             $func->show_tags();
@@ -114,12 +115,15 @@
 
     $func = new resultados();
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $post_title = $_POST['post_title'];
-        $post_body = $_POST['post_body'];
-        $selected_tags = $_POST['selected_tags']; // Recupera as tags selecionadas
-        $tag_ids = explode(",", $selected_tags); // Separa as tags em um array
-        $func->publication($post_title, $post_body, $tag_ids);
-        echo "Postagem enviada com sucesso.";
+        if (isset($_SESSION['login'])) {
+            $user_id = $_SESSION['login'];
+            $post_title = $_POST['post_title'];
+            $post_body = $_POST['post_body'];
+            $selected_tags = $_POST['selected_tags']; // Recupera as tags selecionadas
+            $tag_ids = explode(",", $selected_tags); // Separa as tags em um array
+            $func->publication($post_title, $post_body, $tag_ids, $user_id);
+            echo "Postagem enviada com sucesso.";
+        }
     } else {
         echo "Desculpe, houve um erro ao enviar a postagem.";
     }
@@ -143,45 +147,45 @@
     </script>
 
     <script>
-        // Variável para controlar se é a primeira tag adicionada
+
         var firstTagAdded = true;
 
-        // Adiciona um listener de evento de clique a todos os checkboxes
+
         document.querySelectorAll('input[type="checkbox"]').forEach(item => {
             item.addEventListener('change', event => {
-                // Verifica se o checkbox foi marcado
+
                 if (event.target.checked) {
-                    // Adiciona a tag selecionada ao elemento de visualização
+
                     addToSelectedTags(event.target.value);
                 } else {
-                    // Remove a tag desmarcada do elemento de visualização
+
                     removeFromSelectedTags(event.target.value);
                 }
             });
         });
 
-        // Função para adicionar uma tag ao elemento de visualização
-        function addToSelectedTags(tag) {
-    var selectedTagsInput = document.getElementById("selectedTagsInput");
-    var currentValue = selectedTagsInput.value;
-    if (currentValue !== "") {
-        currentValue += ",";
-    }
-    selectedTagsInput.value = currentValue + tag;
-}
 
-        // Função para remover uma tag do elemento de visualização
+        function addToSelectedTags(tag) {
+            var selectedTagsInput = document.getElementById("selectedTagsInput");
+            var currentValue = selectedTagsInput.value;
+            if (currentValue !== "") {
+                currentValue += ",";
+            }
+            selectedTagsInput.value = currentValue + tag;
+        }
+
+
         function removeFromSelectedTags(tag) {
-            // Obtém todos os elementos span com a classe 'tag'
+
             var tags = document.querySelectorAll(".tag");
-            // Itera sobre os elementos para encontrar e remover a tag desmarcada
+
             tags.forEach(function (tagElement) {
                 if (tagElement.textContent === tag) {
                     tagElement.parentNode.removeChild(tagElement);
                 }
             });
 
-            // Atualiza a variável firstTagAdded se não houver mais tags
+
             if (document.querySelectorAll(".tag").length === 0) {
                 firstTagAdded = true;
             }

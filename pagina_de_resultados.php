@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -9,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>Minha Página</title>
     <style>
@@ -107,7 +111,7 @@
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
+                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -124,11 +128,16 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
                         </li>
                     </ul>
                     <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2" type="text" id="live_search" placeholder="Search"
+                            aria-label="Search">
+                        <div id="searchresult">
+
+
+                        </div>
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
@@ -175,9 +184,10 @@
                                 </div>
                                 <div class="modal-body">
                                     <?php
-                                        include "funcoes_result.php";
-                                        $func = new resultados();
-                                        $func->show_tags();
+                                    
+                                    include "funcoes_result.php";
+                                    $func = new resultados();
+                                    $func->show_tags();
                                     ?>
                                 </div>
                                 <div class="modal-body">
@@ -198,7 +208,8 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save
+                                        changes</button>
                                 </div>
                             </div>
                         </div>
@@ -214,12 +225,44 @@
                     </select>
                     <span id="valorAno"></span>
                 </li>
-                <li class="list-group-item"> <a href="#" class="card-link">Another link</a></li>
+                <li class="list-group-item"><button type="button" id="btnFiltrar" class="btn btn-info"
+                        data-bs-dismiss="modal">Filtrar</button></li>
 
             </ul>
 
 
 
+
+            <?php
+
+            function filtrarResultados($status, $tags, $ano)
+            {
+
+
+                $resultadosFiltrados = "<div class='resultados-filtrados'>";
+
+                $resultadosFiltrados .= "</div>";
+                return $resultadosFiltrados;
+            }
+
+
+            if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+                $status = isset($_POST['status']) ? $_POST['status'] : null;
+                $tags = isset($_POST['tags']) ? $_POST['tags'] : null;
+                $ano = isset($_POST['ano']) ? $_POST['ano'] : null;
+
+
+                if ($status !== null || $tags !== null || $ano !== null) {
+                    $resultadosFiltrados = filtrarResultados($status, $tags, $ano);
+
+                    echo $resultadosFiltrados;
+                } else {
+
+                    echo "Exibindo todos os resultados";
+                }
+            }
+            ?>
 
 
 
@@ -235,7 +278,7 @@
     <main>
         <?php
 
-        
+
 
         $func = new resultados();
 
@@ -243,14 +286,56 @@
 
         ?>
     </main>
-    <script>
-        const slider = document.getElementById("ano");
-        const valorAno = document.getElementById("valorAno");
 
-        // Atualiza o valor exibido quando o usuário interage com o controle deslizante
-        slider.addEventListener("input", function () {
-            valorAno.textContent = slider.value;
+    <script>
+        document.getElementById('btnFiltrar').addEventListener('click', function () {
+
+            const status = document.querySelector('#statusDropdown .dropdown-item.active').textContent.trim();
+            const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(checkbox => checkbox.value);
+            const selectedYear = document.getElementById('pet-select').value;
+
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'script_de_filtragem.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+
+                        document.getElementById('resultados').innerHTML = xhr.responseText;
+                    } else {
+                        console.error('Erro ao processar a solicitação de filtragem');
+                    }
+                }
+            };
+
+            xhr.send(JSON.stringify({ status: status, tags: selectedTags, year: selectedYear }));
         });
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#live_search").keyup(function () {
+
+                var input = $(this).val();
+
+                if (input != "") {
+                    $.ajax({
+
+                        url: "livesearch.php",
+                        method: "POST",
+                        data: { input: input },
+
+                        success: function (data) {
+                            $("#searchresult").html(data);
+                        }
+                    });
+                } else {
+                    $("#searchresult").html("");
+                }
+            })
+        })
     </script>
 </body>
 

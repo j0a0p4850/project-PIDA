@@ -1,34 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <title>Document</title>
+    <title>Formulário de Cadastro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 12px);
+            padding: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            resize: vertical;
+        }
+
+        .input-duplo {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-duplo input {
+            width: 48%;
+        }
+
+        .habilidades {
+            height: 100px;
+        }
+    </style>
 </head>
 
 <body>
-    <form action="POST">
-        
-        <div class="input-group">
-            <h3>Sobre: </h3>
-            <span class="input-group-text">With textarea</span>
-            <textarea class="form-control" aria-label="With textarea"></textarea>
+
+    <form method="post" action="pagina_de_processamento.php">
+        <label for="user_description">Resumo:</label>
+        <textarea id="user_description" name="user_description" rows="4"></textarea>
+
+        <label for="habilidades">Habilidades:</label>
+        <input type="text" name="habilidades" id="habilidades" placeholder="Titulo Habilidade. Ex: HTML">
+
+        <label for="habilidade_descricao">Descrição Habilidade:</label>
+        <textarea name="habilidade_descricao" id="habilidade_descricao" cols="30" rows="4"
+            placeholder="Descreva a sua habilidade"></textarea>
+
+        <div class="input-duplo">
+            <label for="empresa">Empresa:</label>
+            <input type="text" id="empresa" name="empresa">
+            <label for="cargo">Cargo:</label>
+            <input type="text" id="cargo" name="cargo">
         </div>
-        <br>
-        <div class="input-group">
-            <h3>Cargo e Empresa: </h3>
-            <br>
-            <span class="input-group-text">First and last name</span>
-            <input type="text" aria-label="First name" class="form-control">
-            <input type="text" aria-label="Last name" class="form-control">
-        </div>
+
+        <button type="submit">Modificar</button>
     </form>
+
+
+    
+
+
 </body>
 
 </html>

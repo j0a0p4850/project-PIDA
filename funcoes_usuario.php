@@ -11,7 +11,7 @@ class funcoes
     {
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-        // Inserir registro
+        
         $sql = "INSERT INTO `tb_usuario` (`user_first_name`, `user_last_name`,`user_name`, `user_email`, `user_password`) VALUES "
             . "( '$fist_name', '$last_name','$username', '$email', '$password')";
         if ($conecta->query($sql) === TRUE) {
@@ -22,6 +22,51 @@ class funcoes
         }
         $conexao->desconectar();
     }
+
+    public function atualizarInformacoesUsuario($user_id, $user_description, $habilidades, $habilidade_descricao, $empresa, $cargo)
+    {
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        
+        $user_description = mysqli_real_escape_string($conecta, $user_description);
+        $habilidades = mysqli_real_escape_string($conecta, $habilidades);
+        $habilidade_descricao = mysqli_real_escape_string($conecta, $habilidade_descricao);
+        $empresa = mysqli_real_escape_string($conecta, $empresa);
+        $cargo = mysqli_real_escape_string($conecta, $cargo);
+
+        
+        $sql = "UPDATE `tb_usuario` SET ";
+        if (!empty($user_description)) {
+            $sql .= "`descricao_user` = '$user_description', ";
+        }
+        if (!empty($habilidades)) {
+            $sql .= "`habilidade_user` = '$habilidades', ";
+        }
+        if (!empty($habilidade_descricao)) {
+            $sql .= "`habilidade_descricao` = '$habilidade_descricao', ";
+        }
+        if (!empty($empresa)) {
+            $sql .= "`empresa_user` = '$empresa', ";
+        }
+        if (!empty($cargo)) {
+            $sql .= "`cargo_empresa_user` = '$cargo', ";
+        }
+        // Remover a última vírgula
+        $sql = rtrim($sql, ', ');
+
+        $sql .= " WHERE `id_user` = $user_id;";
+
+        // Executar a consulta
+        if (mysqli_query($conecta, $sql)) {
+            echo "Informações do usuário atualizadas com sucesso!";
+        } else {
+            echo "Erro ao atualizar informações do usuário: " . mysqli_error($conecta);
+        }
+
+        $conexao->desconectar();
+    }
+
     public function logar($email, $password)
     {
         $conexao = new conexaoDB();
@@ -30,7 +75,7 @@ class funcoes
         $sql = "SELECT id_user, user_name, user_email FROM tb_usuario WHERE user_password='$password' and user_email='$email'";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
-            // saída dos dados
+            
             while ($linha = $resultado->fetch_assoc()) {
 
                 return $linha["id_user"];
@@ -45,7 +90,7 @@ class funcoes
     {
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-        // Inserir registro
+        
         $sql = "SELECT (`user_name`) FROM tb_usuario where id_user = $id_user ";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
@@ -66,8 +111,8 @@ class funcoes
 
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-        // Inserir registro
-        $sql = "SELECT id_user, descricao_user FROM tb_usuario where id_user = '$id_user';";
+       
+        $sql = "SELECT id_user, descricao_user, habilidade_user, cargo_empresa_user, empresa_user, habilidade_descricao FROM tb_usuario where id_user = '$id_user';";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
@@ -76,7 +121,7 @@ class funcoes
                 <a href="edicao_dados_perfil.php"><button type="button" class="btn btn-primary btn-sm">Editar Informações</button></a>
                 <div class="resumo">
                         <h3>Resumo</h3>
-                        <p>'.$linha['descricao_user'] .'</p>
+                        <p>' . $linha['descricao_user'] . '</p>
                     </div>
                     <br>
                     <br>
@@ -92,8 +137,8 @@ class funcoes
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
+                                    <th scope="row">' . $linha['empresa_user'] . '</th>
+                                    <td>' . $linha['cargo_empresa_user'] . '</td>
 
                                 </tr>
                             </tbody>
@@ -110,48 +155,14 @@ class funcoes
                                         <button class="accordion-button collapsed" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
                                             aria-expanded="false" aria-controls="flush-collapseOne">
-                                            Accordion Item #1
+                                            '.$linha['habilidade_user'] .'
                                         </button>
                                     </h2>
                                     <div id="flush-collapseOne" class="accordion-collapse collapse"
                                         data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">Placeholder content for this accordion, which is
-                                            intended to demonstrate the <code>.accordion-flush</code> class. This is the
-                                            first items accordion body.</div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
-                                            aria-expanded="false" aria-controls="flush-collapseTwo">
-                                            Accordion Item #2
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseTwo" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">Placeholder content for this accordion, which is
-                                            intended to demonstrate the <code>.accordion-flush</code> class. This is the
-                                            second items accordion body. Lets imagine this being filled with some
-                                            actual content.</div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"
-                                            aria-expanded="false" aria-controls="flush-collapseThree">
-                                            Accordion Item #3
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseThree" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">Placeholder content for this accordion, which is
-                                            intended to demonstrate the <code>.accordion-flush</code> class. This is the
-                                            third items accordion body. Nothing more exciting happening here in terms
-                                            of content, but just filling up the space to make it look, at least at first
-                                            glance, a bit more representative of how this would look in a real-world
-                                            application.</div>
+                                        <div class="accordion-body">
+                                        '.$linha['habilidade_descricao'] .'
+                                        </div>
                                     </div>
                                 </div>
                             </div>
