@@ -135,6 +135,7 @@ include "funcoes_result.php";
 
             <br>
                 
+            
                 <div class="container_area_texto" id="commentForm" class="area_texto hidden">
                     <form action="comentario" id="comentForm" class="area_texto hidden">
                         <div class="area_texto">

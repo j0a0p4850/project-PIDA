@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $func = new funcoes();
     $id_usuario = $func->logar($email, $password);
 
-    if ($id_usuario) {   
+    if ($id_usuario) {
         $_SESSION['login'] = $id_usuario;
         header('Location: perfil_usuario.php');
         exit();
@@ -87,49 +87,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-   
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
-                        </li>
-                    </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                </div>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
             </div>
-        </nav>
-    
+        </div>
+    </nav>
+
 
 
     <div class="container">
@@ -144,14 +144,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Logar</button>
+            <h6>Nao possui conta? <a href="cadastro.php">Clique Aqui</a></h6>
         </form>
         <?php
-       
+
 
 
         ?>
 
     </div>
+
+    <script>
+        const email = "jp.jpr.jp@gmail.com";
+        
+        function verificarSintaxeEmail(email) {
+            const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return padrao.test(email);
+        }
+
+        // Exemplo de uso
+
+        console.log(verificarSintaxeEmail(email));  // true ou false
+
+
+        async function verificarDominioEmail(email) {
+            const dominio = email.split('@')[1];
+            const url = `https://dns.google/resolve?name=${dominio}&type=MX`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.Answer && data.Answer.length > 0;
+            } catch (error) {
+                console.error('Erro ao verificar o domínio:', error);
+                return false;
+            }
+        }
+
+        verificarDominioEmail(email).then(isValid => console.log(isValid));  // true ou false
+
+
+        async function verificarEmail(email) {
+            if (!verificarSintaxeEmail(email)) {
+                return false;
+            }
+            if (!await verificarDominioEmail(email)) {
+                return false;
+            }
+            return true;
+        }
+
+
+        verificarEmail(email).then(isValid => console.log(isValid));  // true ou false
+
+
+    </script>
 </body>
 
 </html>

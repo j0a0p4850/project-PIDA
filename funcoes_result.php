@@ -13,7 +13,7 @@ class resultados
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, 
+        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, 
         p.data_publicacao, p.data_fechamento, p.status_pergunta, GROUP_CONCAT(t.tag_name) AS tags_associadas
         FROM tb_pergunta p
         JOIN tb_pergunta_tags pt ON p.id_pergunta = pt.pergunta_id
@@ -22,11 +22,15 @@ class resultados
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
-                echo '<div class="list-group">
+
+
+                if ($linha['status_pergunta'] == "Aberta") {
+
+                    echo '<div class="list-group">
                 <a href="pagina_de_post.php?id=' . $linha['id_pergunta'] . '" class="list-group-item list-group-item-action" aria-current="true">
                     <div class="d-flex w-100 justify-content-between">
                         <h5 class="mb-1">' . $linha['pergunta_title'] . '</h5>
-                        <small>' . $linha['data_publicacao'] . '</small>
+                        <small>' . date("d/m/Y", strtotime($linha['data_publicacao'])) . '</small>
                 
                     </div>
                    
@@ -34,8 +38,28 @@ class resultados
                     <br>
                     <span class="badge text-bg-primary rounded-pill">14</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
+                    <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
                 </div>';
+                } else {
+                    echo '<div class="list-group">
+                <a href="pagina_de_post.php?id=' . $linha['id_pergunta'] . '" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">' . $linha['pergunta_title'] . '</h5>
+                        <small>' . date("d/m/Y", strtotime($linha['data_publicacao'])) . '</small>
+                
+                    </div>
+                   
+                    <small>And some small print.</small>
+                    <br>
+                    <span class="badge text-bg-primary rounded-pill">14</span>
+                    <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
+                    <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
+                </a>
+                </div>';
+
+                }
+
             }
 
         } else {
@@ -49,6 +73,17 @@ class resultados
 
     }
 
+    public function fechar_post($id_post)
+    {
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        $sql = "UPDATE tb_pergunta SET status_pergunta = 'Fechada' WHERE id_pergunta = $id_post";
+
+        $conecta->query($sql);
+        $conexao->desconectar();
+    }
+
 
     public function publication($post_title, $post_body, $tag_ids, $user_id)
     {
@@ -56,7 +91,8 @@ class resultados
         $conecta = $conexao->conectar();
 
 
-        $sql_pergunta = "INSERT INTO `tb_pergunta` (`pergunta_title`, `pergunta_descricao`, `data_publicacao`, `user_id`) VALUES (?, ?, NOW(), ?)";
+        $sql_pergunta = "INSERT INTO `tb_pergunta` (`pergunta_title`, `pergunta_descricao`, `data_publicacao`, `user_id`, `status_pergunta`) 
+        VALUES (?, ?, NOW(), ?, 'Aberta')";
 
 
         $stmt_pergunta = $conecta->prepare($sql_pergunta);
@@ -100,14 +136,14 @@ class resultados
 
 
 
-    public function post_display($id_post, $id_user)
+    public function post_display($id_post)
     {
 
 
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT id_pergunta, pergunta_title, pergunta_descricao, tag_id, user_id FROM tb_pergunta where id_pergunta = '$id_post';";
+        $sql = "SELECT id_pergunta, pergunta_title, pergunta_descricao, tag_id, user_id, status_pergunta FROM tb_pergunta where id_pergunta = '$id_post';";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
@@ -136,13 +172,23 @@ class resultados
                 </div>
             </div>';
 
-            if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["user_id"]) {
-                echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
-                Excluir Postagem
-                </a>';
-            }
+                if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["user_id"]) {
+                    if ($linha['status_pergunta'] == 'Aberta') {
+                        echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
+                        Excluir Postagem
+                        </a>
+                        <a class="btn btn-danger" href="fechar_post_process.php?postagem_fech_id=' . ($linha['id_pergunta']) . '">
+                        Fechar Postagem
+                        </a>';
+                    }
+                    else{
+                        echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
+                        Excluir Postagem
+                        </a>';
+                    }
+                }
 
-            echo '</div>';
+                echo '</div>';
 
             }
 
@@ -228,13 +274,14 @@ class resultados
 
     }
 
-    public function excluir_Post($id_post) {
+    public function excluir_Post($id_post)
+    {
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-    
+
         // Iniciar transação
         $conecta->begin_transaction();
-    
+
         try {
             // Primeiro, remova os registros relacionados na tabela tb_comentarios
             $sql1 = "DELETE FROM tb_comentarios WHERE id_pergunta = ?";
@@ -242,28 +289,28 @@ class resultados
             $stmt1->bind_param("i", $id_post);
             $stmt1->execute();
             $stmt1->close();
-    
+
             // Remova os registros relacionados na tabela tb_resposta
             $sql2 = "DELETE FROM tb_resposta WHERE pergunta_id = ?";
             $stmt2 = $conecta->prepare($sql2);
             $stmt2->bind_param("i", $id_post);
             $stmt2->execute();
             $stmt2->close();
-    
+
             // Remova os registros relacionados na tabela tb_pergunta_tags
             $sql3 = "DELETE FROM tb_pergunta_tags WHERE pergunta_id = ?";
             $stmt3 = $conecta->prepare($sql3);
             $stmt3->bind_param("i", $id_post);
             $stmt3->execute();
             $stmt3->close();
-    
+
             // Por fim, remova a pergunta na tabela tb_pergunta
             $sql4 = "DELETE FROM tb_pergunta WHERE id_pergunta = ?";
             $stmt4 = $conecta->prepare($sql4);
             $stmt4->bind_param("i", $id_post);
             $stmt4->execute();
             $stmt4->close();
-    
+
             // Commit a transação
             $conecta->commit();
         } catch (mysqli_sql_exception $exception) {
@@ -271,10 +318,10 @@ class resultados
             $conecta->rollback();
             throw $exception;
         }
-    
+
         $conexao->desconectar();
     }
-    
+
 
     public function show_tags()
     {

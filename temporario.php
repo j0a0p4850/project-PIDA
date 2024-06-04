@@ -12,7 +12,7 @@ $conecta = $conexao->conectar();
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=s, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Importar jQuery 3.7.1 -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -30,94 +30,90 @@ $conecta = $conexao->conectar();
     <div class="container">
         <div class="row">
             <br />
-
             <br />
             <div class="col-md-3">
-                <!--<div class="list-group">
-                    <h3>Price</h3>
-                    <input type="hidden" id="hidden_minimum_price" value="0" />
-                    <input type="hidden" id="hidden_maximum_price" value="65000" />
-                    <p id="price_show">1000 - 65000</p>
-                    <div id="price_range"></div>
-                </div>-->
                 <div class="list-group">
-                    <h3>Brand</h3>
+                    <h3>Tags</h3>
                     <div style="height: 180px; overflow-y: auto; overflow-x: hidden;">
                         <?php
-
-                        //WHERE product_status = '1'
                         $query = "SELECT id_tags, tag_name FROM tb_tags;";
-                        //$statement = $conecta->prepare($query);
-                        //$statement->execute();
-                        //$result = $statement->get_result();
-                        //$perguntas = $result->fetch_all(MYSQLI_ASSOC);
                         $resultado = $conecta->query($query);
                         if ($resultado->num_rows > 0) {
                             while ($linha = $resultado->fetch_assoc()) {
-
-                                echo '<input class = "common_selector brand" type="checkbox" name="id_tag" id=' . $linha['id_tags'] . ' value=' . $linha['id_tags'] . '>
-                                <label for=' . $linha['id_tags'] . '>' . $linha['tag_name'] . '</label>    ';
-
+                                echo '<input class="common_selector tags" type="checkbox" name="tags" id=' . $linha['id_tags'] . 
+                                ' value=' . $linha['id_tags'] . '>
+                                <label for=' . $linha['id_tags'] . '>' . $linha['tag_name'] . '</label><br>';
                             }
                         }
                         ?>
-
                     </div>
+
+                    <h3>Status</h3>
+                    <div id="status" style="height: 180px; overflow-y: auto; overflow-x: hidden;">
+                        <input class="common_selector status" type="checkbox" name="status" id="abertos" value="Aberta">
+                        <label for="abertos">Abertos</label><br>
+                        <input class="common_selector status" type="checkbox" name="status" id="fechados" value="Fechada">
+                        <label for="fechados">Fechadas</label><br>
+                    </div>
+
+                    <h4>Data</h4>
+                    <select name="data_post" id="data_post" class="common_selector">
+                        <option value="">Escolha a data</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                    </select>
+
+                    <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
+
                 </div>
+            </div>
+            <div class="col-md-9">
+                <div class="filter_data"></div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        $(document).ready(function () {
 
+            filter_data();
 
-                <script>
-                    $(document).ready(function () {
+            function filter_data() {
+                $('.filter_data').html('<div id="loading" style="" ></div>');
+                var action = 'fetch_data';
+                var tags = get_filter('tags');
+                var status = get_filter('status');
+                var data_post = $('#data_post').val();
+                $.ajax({
+                    url: "fetch_data.php",
+                    method: "POST",
+                    data: { action: action, tags: tags, status: status, data_post: data_post },
+                    success: function (data) {
+                        $('.filter_data').html(data);
+                    }
+                });
+            }
 
-                        filter_data();
+            function get_filter(class_name) {
+                var filter = [];
+                $('.' + class_name + ':checked').each(function () {
+                    filter.push($(this).val());
+                });
+                return filter;
+            }
 
-                        function filter_data() {
-                            $('.filter_data').html('<div id="loading" style="" ></div>');
-                            var action = 'fetch_data';
-                            //var brand = get_filter('brand');
-                            //var ram = get_filter('ram');
-                            //var storage = get_filter('storage');
-                            $.ajax({
-                                url: "fetch_data.php",
-                                method: "POST",
-                                data: { action: action },
-                                success: function (data) {
-                                    $('.filter_data').html(data);
-                                }
-                            });
-                        }
+            $('.common_selector').on('click change', function () {
+                filter_data();
+            });
 
-                        function get_filter(class_name) {
-                            var filter = [];
-                            $('.' + class_name + ':checked').each(function () {
-                                filter.push($(this).val());
-                            });
-                            return filter;
-                        }
-
-                        $('.common_selector').click(function () {
-                            filter_data();
-                        });
-
-                        $('#price_range').slider({
-                            range: true,
-                            min: 1000,
-                            max: 65000,
-                            values: [1000, 65000],
-                            step: 500,
-                            stop: function (event, ui) {
-                                $('#price_show').html(ui.values[0] + ' - ' + ui.values[1]);
-                                $('#hidden_minimum_price').val(ui.values[0]);
-                                $('#hidden_maximum_price').val(ui.values[1]);
-                                filter_data();
-                            }
-                        });
-
-                    });
-                </script>
-
-
+            $('#reset_filters').click(function () {
+                $('.common_selector').prop('checked', false);
+                $('#data_post').val('');
+                filter_data();
+            });
+        });
+    </script>
 </body>
 
 </html>
