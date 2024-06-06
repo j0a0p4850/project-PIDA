@@ -1,15 +1,21 @@
 <?php
+
 include 'funcoes_usuario.php';
+
+
 
 $func = new funcoes();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $func->registro($first_name, $last_name, $username, $email, $password);
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+    $func->registro($first_name, $last_name, $username, $email, $hashedPassword);
 }
 
 
@@ -26,6 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    
     <title>Cadastro de Usuário</title>
     <link rel="stylesheet" href="style.css">
 
@@ -96,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="perfil_usuario.php">Perfil</a>
@@ -130,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container">
         <h2>Cadastro de Usuário</h2>
-        <form action="cadastro.php" method="POST">
+        <form id="loginForm" action="cadastro.php" method="POST">
             <div class="form-group">
                 <label for="first_name">Primeiro Nome:</label>
                 <input type="text" id="first_name" name="first_name" required>
@@ -156,6 +163,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('loginForm');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+
+            form.addEventListener('submit', function (event) {
+                console.log('Form submit event triggered');
+
+                if (email.value.trim() === '') {
+                    event.preventDefault();
+                    alert('Por favor, preencha o campo de e-mail.');
+                    return;
+                }
+
+                if (!email.value.includes('.com')) {
+                    event.preventDefault();
+                    alert('O e-mail deve conter ".com".');
+                    return;
+                }
+
+                if (password.value.trim() === '') {
+                    event.preventDefault();
+                    alert('Por favor, preencha o campo de senha.');
+                    return;
+                }
+
+                const passwordValue = password.value;
+                const passwordLength = passwordValue.length;
+                const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue);
+                const hasNumber = /\d/.test(passwordValue);
+
+                if (passwordLength < 4 || passwordLength > 20) {
+                    event.preventDefault();
+                    alert('A senha deve ter entre 4 e 20 caracteres.');
+                    return;
+                }
+
+                if (!hasSpecialCharacter) {
+                    event.preventDefault();
+                    alert('A senha deve conter pelo menos um caractere especial.');
+                    return;
+                }
+
+                if (!hasNumber) {
+                    event.preventDefault();
+                    alert('A senha deve conter pelo menos um número.');
+                    return;
+                }
+
+                
+            });
+        });
+    </script>
 </body>
 
 </html>

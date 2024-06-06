@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "funcoes_result.php";
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -27,30 +28,7 @@ session_start();
         }
 
         /* Cabeçalho */
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-        }
 
-        /* Menu principal */
-        nav {
-            background-color: #444;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            display: inline-block;
-            margin-right: 20px;
-        }
 
         /* Seção de perguntas e respostas */
         main {
@@ -62,6 +40,8 @@ session_start();
             border: 1px solid #ddd;
             padding: 10px;
             margin-bottom: 10px;
+
+
         }
 
         .question h2 {
@@ -93,12 +73,6 @@ session_start();
         .share {
             border: 2px solid black;
         }
-
-        .filter_data {
-            display: block;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
     </style>
 </head>
 
@@ -120,6 +94,22 @@ session_start();
                         <li class="nav-item">
                             <a class="nav-link" href="perfil_usuario.php">Perfil</a>
                         </li>
+                        <!--
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Dropdown
+                            </a>
+                            
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>-->
                         <li class="nav-item">
                             <a href="Pag_tags.php" class="nav-link">Tags</a>
                         </li>
@@ -130,7 +120,10 @@ session_start();
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="text" id="live_search" placeholder="Search"
                             aria-label="Search">
-                        <div id="searchresult"></div>
+                        <div id="searchresult">
+
+
+                        </div>
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
@@ -144,25 +137,26 @@ session_start();
             <div>
                 <br>
             </div>
+
             <ul class="list-group">
                 <li class="list-group-item">
-                    <div id="status" style="height: 180px; overflow-y: auto; overflow-x: hidden;">
-                        <input class="common_selector status" type="checkbox" name="status" id="abertos" value="Aberta">
-                        <label for="abertos">Abertos</label><br>
-                        <input class="common_selector status" type="checkbox" name="status" id="fechados"
-                            value="Fechada">
-                        <label for="fechados">Fechadas</label><br>
+                    <div class="btn-group dropup share" id="status">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Status
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" type="button">Todos</button></li>
+                            <li><button class="dropdown-item" type="button">Abertos</button></li>
+                            <li><button class="dropdown-item" type="button">Fechadas</button></li>
+                        </ul>
                     </div>
                 </li>
-                <?php
-                include "funcoes_result.php";
-                $func = new resultados();
-                $func->show_tags();
-                ?>
+                <li class="list-group-item">
                 </li>
                 <li class="list-group-item">
                     <h4>Data</h4>
-                    <select name="data_post" id="data_post" class="common_selector">
+                    <select name="pets" id="pet-select">
                         <option value="">Escolha a data</option>
                         <option value="2022">2022</option>
                         <option value="2023">2023</option>
@@ -171,26 +165,35 @@ session_start();
                     <span id="valorAno"></span>
                 </li>
                 <li class="list-group-item"><button type="button" id="btnFiltrar" class="btn btn-info"
-                        data-bs-dismiss="modal">Filtrar</button>
-                    <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
-                </li>
+                        data-bs-dismiss="modal">Filtrar</button></li>
+
             </ul>
         </div>
+
     </div>
 
     <main>
-        <div class="col-md-9">
-            <div class="filter_data">
-                <!-- Conteúdo filtrado será inserido aqui -->
-            </div>
-        </div>
+        <?php
+        $func = new resultados();
+        if (isset($_GET['id'])) {
+            $id_tag = $_GET['id'];
+            $func->result_tags_especifico($id_tag);
+        } else {
+            echo 'Nao deu certo';
+        }
+
+
+
+        ?>
     </main>
 
     <script>
         document.getElementById('btnFiltrar').addEventListener('click', function () {
+
             const status = document.querySelector('#statusDropdown .dropdown-item.active').textContent.trim();
             const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(checkbox => checkbox.value);
             const selectedYear = document.getElementById('pet-select').value;
+
 
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'script_de_filtragem.php', true);
@@ -198,25 +201,32 @@ session_start();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
+
                         document.getElementById('resultados').innerHTML = xhr.responseText;
                     } else {
                         console.error('Erro ao processar a solicitação de filtragem');
                     }
                 }
             };
+
             xhr.send(JSON.stringify({ status: status, tags: selectedTags, year: selectedYear }));
         });
+
     </script>
 
     <script type="text/javascript">
         $(document).ready(function () {
             $("#live_search").keyup(function () {
+
                 var input = $(this).val();
+
                 if (input != "") {
                     $.ajax({
+
                         url: "livesearch.php",
                         method: "POST",
                         data: { input: input },
+
                         success: function (data) {
                             $("#searchresult").html(data);
                         }
@@ -224,47 +234,8 @@ session_start();
                 } else {
                     $("#searchresult").html("");
                 }
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            filter_data();
-            function filter_data() {
-                $('.filter_data').html('<div id="loading" style="" ></div>');
-                var action = 'fetch_data';
-                var tags = get_filter('tags');
-                var status = get_filter('status');
-                var data_post = $('#data_post').val();
-                $.ajax({
-                    url: "fetch_data.php",
-                    method: "POST",
-                    data: { action: action, tags: tags, status: status, data_post: data_post },
-                    success: function (data) {
-                        $('.filter_data').html(data);
-                    }
-                });
-            }
-
-            function get_filter(class_name) {
-                var filter = [];
-                $('.' + class_name + ':checked').each(function () {
-                    filter.push($(this).val());
-                });
-                return filter;
-            }
-
-            $('.common_selector').on('click change', function () {
-                filter_data();
-            });
-
-            $('#reset_filters').click(function () {
-                $('.common_selector').prop('checked', false);
-                $('#data_post').val('');
-                filter_data();
-            });
-        });
+            })
+        })
     </script>
 </body>
 

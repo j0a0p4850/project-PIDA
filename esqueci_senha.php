@@ -1,29 +1,10 @@
-<?php
-session_start();
-include 'funcoes_usuario.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $func = new funcoes();
-    $id_usuario = $func->logar($email, $password);
-
-    if ($id_usuario) {
-        $_SESSION['login'] = $id_usuario;
-        header('Location: perfil_usuario.php');
-        exit();
-    } else {
-        echo 'Usuário ou senha inválidos';
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -59,8 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 5px;
         }
 
-        input[type="text"],
-        input[type="email"],
         input[type="password"] {
             width: 100%;
             padding: 10px;
@@ -131,75 +110,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </nav>
 
 
-
     <div class="container">
-        <h2>Login</h2>
-        <form action="login.php" method="POST">
-            <div class="form-group">
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
+        <h2>Cadastro de Usuário</h2>
+        <form id="registrationForm" action="#" method="POST">
             <div class="form-group">
                 <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Logar</button>
-            <h6>Nao possui conta? <a href="cadastro.php">Clique Aqui</a></h6>
-            <h6>Esqueceu sua senha? <a href="esqueci_senha.php">Clique Aqui</a></h6>
+            <div class="form-group">
+                <label for="confirmPassword">Confirme sua Senha:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <button type="submit">Redefinir a senha</button>
         </form>
-        <?php
-
-
-
-        ?>
-
     </div>
 
     <script>
-        const email = "jp.jpr.jp@gmail.com";
-        
-        function verificarSintaxeEmail(email) {
-            const padrao = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return padrao.test(email);
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registrationForm');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
 
-        // Exemplo de uso
+            form.addEventListener('submit', function (event) {
+                // Debugging statement to see if the event listener is being called
+                console.log('Form submit event triggered');
 
-        console.log(verificarSintaxeEmail(email));  // true ou false
-
-
-        async function verificarDominioEmail(email) {
-            const dominio = email.split('@')[1];
-            const url = `https://dns.google/resolve?name=${dominio}&type=MX`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                return data.Answer && data.Answer.length > 0;
-            } catch (error) {
-                console.error('Erro ao verificar o domínio:', error);
-                return false;
-            }
-        }
-
-        verificarDominioEmail(email).then(isValid => console.log(isValid));  // true ou false
-
-
-        async function verificarEmail(email) {
-            if (!verificarSintaxeEmail(email)) {
-                return false;
-            }
-            if (!await verificarDominioEmail(email)) {
-                return false;
-            }
-            return true;
-        }
-
-
-        verificarEmail(email).then(isValid => console.log(isValid));  // true ou false
-
-
+                if (password.value !== confirmPassword.value) {
+                    event.preventDefault(); // Prevent the form from being submitted
+                    alert('As senhas não coincidem. Por favor, tente novamente.');
+                }
+            });
+        });
     </script>
+
 </body>
 
 </html>

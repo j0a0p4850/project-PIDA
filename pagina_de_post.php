@@ -17,6 +17,7 @@ include "funcoes_result.php";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <script src="https://cdn.tiny.cloud/1/7jodojbng5amadhee2m4fr5wh2e1uxbzn8p07lrxngqhu81c/tinymce/7/tinymce.min.js"
         referrerpolicy="origin"></script>
@@ -73,7 +74,6 @@ include "funcoes_result.php";
         .teste {
             height: 300px;
         }
-        
     </style>
 </head>
 
@@ -82,19 +82,21 @@ include "funcoes_result.php";
     <div class="container">
         <?php
         $func = new resultados();
-        
-        if (isset($_GET['id']) && isset($_SESSION['login'])) {
-            $id_user = $_SESSION['login'];
+
+        if (isset($_GET['id'])) {
+            
             $id_post = $_GET['id'];
-            $func->post_display($id_post, $id_user);
+            $func->post_display($id_post);
         }
         ?>
+        <button id="incrementBtn">Aumentar</button>
+        <button id="decrementBtn">Diminuir</button>
 
         <?php
 
 
         $func = new resultados();
-        if (isset($_GET['id'])  && isset($_SESSION['login'])) {
+        if (isset($_GET['id']) && isset($_SESSION['login'])) {
             $id_user = $_SESSION['login'];
             $id_post = $_GET['id'];
             $func->post_resp($id_post, $id_user);
@@ -105,18 +107,18 @@ include "funcoes_result.php";
         <div class="resp">
 
             <div class="container_area_texto">
-                
-                    <form action="#" method="POST" id="respForm" class="area_texto hidden">
-                        <label for="resp">Resposta</label>
-                        <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
-                        <br>
-                        <button type="submit" class="btn btn-info">Botao</button>
-                    </form>
+
+                <form action="#" method="POST" id="respForm" class="area_texto hidden">
+                    <label for="resp">Resposta</label>
+                    <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
+                    <br>
+                    <button type="submit" class="btn btn-info">Botao</button>
+                </form>
 
                 <?php
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $resp_body = $_POST['resp_body'];
-                    if (isset($_GET['id'])  && isset($_SESSION['login'])) {
+                    if (isset($_GET['id']) && isset($_SESSION['login'])) {
                         $id_user = $_SESSION['login'];
                         $id_post = $_GET['id'];
                         $func->Answer($resp_body, $id_post, $id_user);
@@ -130,36 +132,36 @@ include "funcoes_result.php";
                 ?>
                 <br>
 
-                
+
             </div>
 
             <br>
-                
-            
-                <div class="container_area_texto" id="commentForm" class="area_texto hidden">
-                    <form action="comentario" id="comentForm" class="area_texto hidden">
-                        <div class="area_texto">
-                            <textarea id="Comentario_resps" placeholder="Escreva o comentario aqui "></textarea>
-                        </div>
-                        <br>
-                        <button type="button" class="btn btn-danger">Enviar</button>
-                    </form>
-                    
 
-                    <!-- Dando erro -->
-                    <?php
+
+            <div class="container_area_texto" id="commentForm" class="area_texto hidden">
+                <form action="comentario" id="comentForm" class="area_texto hidden">
+                    <div class="area_texto">
+                        <textarea id="Comentario_resps" placeholder="Escreva o comentario aqui "></textarea>
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-danger">Enviar</button>
+                </form>
+
+
+                <!-- Dando erro -->
+                <?php
 
                 //if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    //$coment = $_POST['coment'];
-                    //if (isset($_GET['id'])) {
-                        //$id_post = $_GET['id'];
-                        //$func->Answer($coment, $id_post, $resposta);
-                    //}
+                //$coment = $_POST['coment'];
+                //if (isset($_GET['id'])) {
+                //$id_post = $_GET['id'];
+                //$func->Answer($coment, $id_post, $resposta);
                 //}
-
+                //}
+                
 
                 ?>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -200,7 +202,43 @@ include "funcoes_result.php";
         });
     </script>
 
-    
+<script>
+    const incrementBtn = document.getElementById('incrementBtn');
+    const decrementBtn = document.getElementById('decrementBtn');
+
+    // Função para enviar a requisição AJAX de incremento
+    function incrementCounter() {
+        const idPost = new URLSearchParams(window.location.search).get('id');
+        console.log('ID do Post:', idPost); // Log de depuração
+
+        if (idPost) {
+            fetch('increment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded', // Tipo de conteúdo
+                },
+                body: 'id=' + encodeURIComponent(idPost) // Enviar dados no formato correto
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Resposta do servidor:', data); // Log de depuração
+                if (data.status === 'success') {
+                    alert('Valor incrementado com sucesso!');
+                } else {
+                    alert('Erro ao incrementar valor: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        } else {
+            console.error('ID do Post não encontrado na URL');
+        }
+    }
+
+    // Adicionando evento ao botão de incremento
+    incrementBtn.addEventListener('click', incrementCounter);
+</script>
+
+
 
 </body>
 

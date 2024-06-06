@@ -13,7 +13,7 @@ class resultados
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, 
+        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, p.avaliacao_post,
         p.data_publicacao, p.data_fechamento, p.status_pergunta, GROUP_CONCAT(t.tag_name) AS tags_associadas
         FROM tb_pergunta p
         JOIN tb_pergunta_tags pt ON p.id_pergunta = pt.pergunta_id
@@ -36,7 +36,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">14</span>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: '.$linha['avaliacao_post'] .'</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -52,7 +52,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">14</span>
+                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -73,6 +73,76 @@ class resultados
 
     }
 
+    public function result_tags_especifico($id_tags)
+    {
+
+
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+        // Inserir registro
+        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, p.avaliacao_post,
+        p.data_publicacao, p.data_fechamento, p.status_pergunta, GROUP_CONCAT(t.tag_name) AS tags_associadas
+        FROM tb_pergunta p
+        JOIN tb_pergunta_tags pt ON p.id_pergunta = pt.pergunta_id
+        JOIN tb_tags t ON pt.tag_id = t.id_tags WHERE t.id_tags IN ($id_tags)
+        GROUP BY p.id_pergunta;";
+        $resultado = $conecta->query($sql);
+        if ($resultado->num_rows > 0) {
+            while ($linha = $resultado->fetch_assoc()) {
+
+
+                if ($linha['status_pergunta'] == "Aberta") {
+
+                    echo '<div class="list-group">
+                <a href="pagina_de_post.php?id=' . $linha['id_pergunta'] . '" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">' . $linha['pergunta_title'] . '</h5>
+                        <small>' . date("d/m/Y", strtotime($linha['data_publicacao'])) . '</small>
+                
+                    </div>
+                   
+                    <small>And some small print.</small>
+                    <br>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
+                    <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
+                </a>
+                </div>';
+                } else {
+                    echo '<div class="list-group">
+                <a href="pagina_de_post.php?id=' . $linha['id_pergunta'] . '" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">' . $linha['pergunta_title'] . '</h5>
+                        <small>' . date("d/m/Y", strtotime($linha['data_publicacao'])) . '</small>
+                
+                    </div>
+                   
+                    <small>And some small print.</small>
+                    <br>
+                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
+                    <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
+                </a>
+                </div>';
+
+                }
+
+            }
+
+        } else {
+            echo 'Não há nenhuma pergunta feita ainda';
+        }
+
+        $conexao->desconectar();
+
+
+
+
+    }
+
+
+    
+
     public function fechar_post($id_post)
     {
         $conexao = new conexaoDB();
@@ -91,8 +161,8 @@ class resultados
         $conecta = $conexao->conectar();
 
 
-        $sql_pergunta = "INSERT INTO `tb_pergunta` (`pergunta_title`, `pergunta_descricao`, `data_publicacao`, `user_id`, `status_pergunta`) 
-        VALUES (?, ?, NOW(), ?, 'Aberta')";
+        $sql_pergunta = "INSERT INTO `tb_pergunta` (`pergunta_title`, `pergunta_descricao`, `data_publicacao`, `user_id`, `status_pergunta`, `avaliacao_post`) 
+        VALUES (?, ?, NOW(), ?, 'Aberta', 0)";
 
 
         $stmt_pergunta = $conecta->prepare($sql_pergunta);
@@ -143,7 +213,7 @@ class resultados
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT id_pergunta, pergunta_title, pergunta_descricao, tag_id, user_id, status_pergunta FROM tb_pergunta where id_pergunta = '$id_post';";
+        $sql = "SELECT id_pergunta, pergunta_title, pergunta_descricao, tag_id, user_id, status_pergunta, avaliacao_post FROM tb_pergunta where id_pergunta = '$id_post';";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
@@ -152,12 +222,14 @@ class resultados
                 echo '<div class="post">
                 <div>
                 <h2>' . $linha['user_id'] . '</h2>
-                    <header class="cabeca_post"> 
+                    <header class="cabeca_post">
+                    <div id="counter">'.$linha['avaliacao_post'] .'</div>
                         <h4>' .
                     $linha['pergunta_title']
                     . '
                         </h4>
                     </header>
+                    
                 </div>
                 <div class="corpo">
                     <pre class="">
@@ -179,11 +251,17 @@ class resultados
                         </a>
                         <a class="btn btn-danger" href="fechar_post_process.php?postagem_fech_id=' . ($linha['id_pergunta']) . '">
                         Fechar Postagem
+                        </a>
+                        <a class="btn btn-danger" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
+                        Editar Postagem
                         </a>';
                     }
                     else{
                         echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
                         Excluir Postagem
+                        </a>
+                        <a class="btn btn-danger" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
+                        Editar Postagem
                         </a>';
                     }
                 }
@@ -334,7 +412,7 @@ class resultados
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
-                echo '<input type="checkbox" name="id_tag" id=' . $linha['id_tags'] . ' value=' . $linha['id_tags'] . '>
+                echo '<input class="common_selector tags" type="checkbox" name="id_tag" id=' . $linha['id_tags'] . ' value=' . $linha['id_tags'] . '>
                 <label for=' . $linha['id_tags'] . '>' . $linha['tag_name'] . '</label>    ';
             }
 
@@ -364,7 +442,7 @@ class resultados
                 <div class="card-body">
                     <h5 class="card-title">' . $linha['tag_name'] . '</h5>
                     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <a href="pag_perguntas_tags.php?id= '. $linha['id_tags'].'" class="btn btn-primary">Perguntas Com Essa Tag</a>
                 </div>
             </div>';
             }
@@ -379,6 +457,93 @@ class resultados
 
 
     }
+
+    public function incrementValue($id_post, $id_user){
+
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        $sql = "UPDATE tb_pergunta SET avaliacao_post = avaliacao_post + 1 WHERE id_pergunta = ?";
+        $stmt = $conecta->prepare($sql);
+        $stmt->bind_param('i', $id_post);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $conecta->close();
+            return true;
+        } else {
+            $stmt->close();
+            $conecta->close();
+            return false;
+        }
+    }
+
+   /* public function editar_post($post_id, $post_title, $pergunta_descricao){
+
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        $sql = "UPDATE `tb_usuario` SET ";
+        if (!empty($post_title)) {
+            $sql .= "`pergunta_title` = '$post_title', ";
+        }
+        if (!empty($pergunta_descricao)) {
+            $sql .= "`pergunta_descricao` = '$pergunta_descricao', ";
+        }
+        
+        // Remover a última vírgula
+        $sql = rtrim($sql, ', ');
+
+        $sql .= " WHERE `id_pergunta` = $post_id;";
+
+        // Executar a consulta
+        if (mysqli_query($conecta, $sql)) {
+            echo "Informações do usuário atualizadas com sucesso!";
+        } else {
+            echo "Erro ao atualizar informações do usuário: " . mysqli_error($conecta);
+        }
+
+        $conexao->desconectar();
+    }*/
+    public function editar_post($post_id, $post_title, $pergunta_descricao){
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+    
+        $sql = "UPDATE `tb_pergunta` SET ";
+        $params = [];
+        $types = "";
+    
+        if (!empty($post_title)) {
+            $sql .= "`pergunta_title` = ?, ";
+            $params[] = $post_title;
+            $types .= "s";
+        }
+        if (!empty($pergunta_descricao)) {
+            $sql .= "`pergunta_descricao` = ?, ";
+            $params[] = $pergunta_descricao;
+            $types .= "s";
+        }
+    
+        // Remover a última vírgula
+        $sql = rtrim($sql, ', ');
+    
+        $sql .= " WHERE `id_pergunta` = ?";
+        $params[] = $post_id;
+        $types .= "i";
+    
+        $stmt = $conecta->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+    
+        if ($stmt->execute()) {
+            echo "Informações do usuário atualizadas com sucesso!";
+        } else {
+            echo "Erro ao atualizar informações do usuário: " . $stmt->error;
+        }
+    
+        $stmt->close();
+        $conexao->desconectar();
+    }
+    
 
 
 }
