@@ -57,6 +57,44 @@ class funcoes
 
     }
 
+
+
+    public function esquecer_senha($email)
+    {
+        
+        $mail = new PHPMailer(true);
+        try {
+            
+                //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                $mail->isSMTP();                                            //Send using SMTP
+                $mail->Host = 'sandbox.smtp.mailtrap.io';                     //Set the SMTP server to send through
+                $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+                $mail->Username = '0c58445a22fa36';                     //SMTP usernsame
+                $mail->Password = '24d6d9aaf85bab';                               //SMTP password
+                //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+                $mail->SMTPSecure = 'tls';          //Enable implicit TLS encryption
+                $mail->Port = 587;
+                $mail->Timeout = 5;
+
+                $mail->setFrom('techqa.pida@gmail.com', 'TechQA');
+                $mail->addAddress($email);
+
+                $mail->isHTML(true);                                  //Set email format to HTML
+                $mail->Subject = 'Confirmar Cadastro';
+                $mail->Body = "Clique no link para poder confirmar o email e ter acesso a conta <a href= 'http://localhost:3000/esqueci_senha.php'>Clique Aqui</a>";
+                $mail->AltBody = "Clique no link para poder confirmar o email e ter acesso a conta http://localhost:3000/esqueci_senha.php";
+
+                $mail->send();
+                echo "Confirme a sua conta pelo email para poder acessa-la";
+                //header("Location: cadastro.php");
+
+            } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
+        
+
+    }
+
     public function atualizarInformacoesUsuario($user_id, $user_description, $habilidades, $habilidade_descricao, $empresa, $cargo)
     {
         $conexao = new conexaoDB();

@@ -1,118 +1,164 @@
-<?php
-
-include "conexao_db.php";
-
-$conexao = new conexaoDB();
-$conecta = $conexao->conectar();
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Importar jQuery 3.7.1 -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <title>Cancel Confirmation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hidden {
+            display: none;
+        }
 
-    <!-- Importar jQuery UI 1.13.3 -->
-    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+        #confirmationMessage {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+            width: 300px;
+            margin-top: 20px;
+        }
 
-    <!-- Importar o CSS do jQuery UI 1.13.3 -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+        #confirmationMessage p {
+            margin: 0 0 10px 0;
+        }
 
-    <title>Document</title>
+        #confirmationMessage button {
+            margin-right: 10px;
+        }
+
+        #reportModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .modal-content button {
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        #otherReasonInput {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
+    <button id="cancelButton">Cancel</button>
+    <div id="confirmationMessage" class="hidden">
+        <p>Are you sure you want to cancel?</p>
+        <button id="confirmCancelButton">Yes</button>
+        <button id="dismissMessageButton">No</button>
+    </div>
 
-    <div class="container">
-        <div class="row">
-            <br />
-            <br />
-            <div class="col-md-3">
-                <div class="list-group">
-                    <h3>Tags</h3>
-                    <div style="height: 180px; overflow-y: auto; overflow-x: hidden;">
-                        <?php
-                        $query = "SELECT id_tags, tag_name FROM tb_tags;";
-                        $resultado = $conecta->query($query);
-                        if ($resultado->num_rows > 0) {
-                            while ($linha = $resultado->fetch_assoc()) {
-                                echo '<input class="common_selector tags" type="checkbox" name="tags" id=' . $linha['id_tags'] . 
-                                ' value=' . $linha['id_tags'] . '>
-                                <label for=' . $linha['id_tags'] . '>' . $linha['tag_name'] . '</label><br>';
-                            }
-                        }
-                        ?>
-                    </div>
+    <button id="reportButton">Report</button>
 
-                    <h3>Status</h3>
-                    <div id="status" style="height: 180px; overflow-y: auto; overflow-x: hidden;">
-                        <input class="common_selector status" type="checkbox" name="status" id="abertos" value="Aberta">
-                        <label for="abertos">Abertos</label><br>
-                        <input class="common_selector status" type="checkbox" name="status" id="fechados" value="Fechada">
-                        <label for="fechados">Fechadas</label><br>
-                    </div>
-
-                    <h4>Data</h4>
-                    <select name="data_post" id="data_post" class="common_selector">
-                        <option value="">Escolha a data</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                    </select>
-
-                    <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
-
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="filter_data"></div>
-            </div>
+    <div id="reportModal" class="hidden">
+        <div class="modal-content">
+            <h2>Report Post</h2>
+            <p>Select the reason for reporting this post:</p>
+            <form id="reportForm">
+                <label><input type="checkbox" name="reason" value="Spam"> Spam</label><br>
+                <label><input type="checkbox" name="reason" value="Inappropriate Content"> Inappropriate Content</label><br>
+                <label><input type="checkbox" name="reason" value="Harassment"> Harassment</label><br>
+                <label><input type="checkbox" name="reason" value="Other" id="otherCheckbox"> Other</label><br>
+                <input type="text" id="otherReasonInput" placeholder="Please describe the reason">
+                <button type="button" id="submitReportButton">Submit</button>
+                <button type="button" id="cancelReportButton">Cancel</button>
+            </form>
         </div>
     </div>
 
     <script>
-        $(document).ready(function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            const cancelButton = document.getElementById('cancelButton');
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            const confirmCancelButton = document.getElementById('confirmCancelButton');
+            const dismissMessageButton = document.getElementById('dismissMessageButton');
 
-            filter_data();
-
-            function filter_data() {
-                $('.filter_data').html('<div id="loading" style="" ></div>');
-                var action = 'fetch_data';
-                var tags = get_filter('tags');
-                var status = get_filter('status');
-                var data_post = $('#data_post').val();
-                $.ajax({
-                    url: "fetch_data.php",
-                    method: "POST",
-                    data: { action: action, tags: tags, status: status, data_post: data_post },
-                    success: function (data) {
-                        $('.filter_data').html(data);
-                    }
-                });
-            }
-
-            function get_filter(class_name) {
-                var filter = [];
-                $('.' + class_name + ':checked').each(function () {
-                    filter.push($(this).val());
-                });
-                return filter;
-            }
-
-            $('.common_selector').on('click change', function () {
-                filter_data();
+            cancelButton.addEventListener('click', function () {
+                confirmationMessage.classList.remove('hidden');
             });
 
-            $('#reset_filters').click(function () {
-                $('.common_selector').prop('checked', false);
-                $('#data_post').val('');
-                filter_data();
+            confirmCancelButton.addEventListener('click', function () {
+                // Handle the actual cancellation logic here
+                confirmationMessage.classList.add('hidden');
+                console.log('Cancelled');
+            });
+
+            dismissMessageButton.addEventListener('click', function () {
+                confirmationMessage.classList.add('hidden');
             });
         });
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const reportButton = document.getElementById('reportButton');
+            const reportModal = document.getElementById('reportModal');
+            const submitReportButton = document.getElementById('submitReportButton');
+            const cancelReportButton = document.getElementById('cancelReportButton');
+            const otherCheckbox = document.getElementById('otherCheckbox');
+            const otherReasonInput = document.getElementById('otherReasonInput');
+
+            reportButton.addEventListener('click', function () {
+                reportModal.classList.remove('hidden');
+            });
+
+            otherCheckbox.addEventListener('change', function () {
+                if (otherCheckbox.checked) {
+                    otherReasonInput.style.display = 'block';
+                } else {
+                    otherReasonInput.style.display = 'none';
+                }
+            });
+
+            submitReportButton.addEventListener('click', function () {
+                const selectedReasons = Array.from(document.querySelectorAll('input[name="reason"]:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (otherCheckbox.checked) {
+                    selectedReasons.push(otherReasonInput.value);
+                }
+
+                console.log('Report submitted for reasons:', selectedReasons);
+
+                // Logic to handle the report submission (e.g., send to server) goes here
+
+                reportModal.classList.add('hidden');
+            });
+
+            cancelReportButton.addEventListener('click', function () {
+                reportModal.classList.add('hidden');
+            });
+        });
+
     </script>
 </body>
 

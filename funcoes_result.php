@@ -213,7 +213,23 @@ class resultados
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT id_pergunta, pergunta_title, pergunta_descricao, tag_id, user_id, status_pergunta, avaliacao_post FROM tb_pergunta where id_pergunta = '$id_post';";
+        $sql = "
+    SELECT 
+        p.id_pergunta, 
+        u.user_name, 
+        p.pergunta_title, 
+        p.pergunta_descricao, 
+        p.tag_id, 
+        p.user_id, 
+        p.status_pergunta, 
+        p.avaliacao_post
+    FROM 
+        tb_pergunta p
+    INNER JOIN 
+        tb_usuario u ON p.user_id = u.id_user
+    WHERE 
+        p.id_pergunta = '$id_post';
+    ";
         $resultado = $conecta->query($sql);
         if ($resultado->num_rows > 0) {
             while ($linha = $resultado->fetch_assoc()) {
@@ -221,7 +237,7 @@ class resultados
 
                 echo '<div class="post">
                 <div>
-                <h2>' . $linha['user_id'] . '</h2>
+                <a href="perfil_usuario_alt.php?id='. $linha['user_id'] .'" target="_blank"><h2>' . $linha['user_name'] . '</h2></a>
                     <header class="cabeca_post">
                     <div id="counter">'.$linha['avaliacao_post'] .'</div>
                         <h4>' .
