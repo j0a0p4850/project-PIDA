@@ -1,3 +1,22 @@
+<?php
+session_start();
+include 'funcoes_usuario.php';
+
+if (isset($_GET["id"])) {
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $func = new funcoes();
+        $email = $_GET["id"];
+        $password = $_POST['password'];
+        
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        $func->atualizar_senha($email, $hashedPassword);
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 

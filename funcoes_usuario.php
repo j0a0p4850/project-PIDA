@@ -12,39 +12,68 @@ class funcoes
 {
 
 
-    public function registro($fist_name, $last_name, $username, $email, $hashedPassword)
+    public function registro($first_name, $last_name, $username, $email, $hashedPassword)
     {
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
 
-        $stmt = $conecta->prepare("INSERT INTO tb_usuario (`user_first_name`, `user_last_name`,`user_name`,`user_email`, `user_password`) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss",$fist_name, $last_name, $username, $email, $hashedPassword);
+        // Verifica se o email já está em uso
+        $checkEmailQuery = "SELECT * FROM tb_usuario WHERE user_email = ?";
+        $stmtCheckEmail = $conecta->prepare($checkEmailQuery);
+        $stmtCheckEmail->bind_param("s", $email);
+        $stmtCheckEmail->execute();
+        $resultEmail = $stmtCheckEmail->get_result();
+
+        if ($resultEmail->num_rows > 0) {
+            // Email já está em uso
+            echo "Erro: Esse email já existe.";
+            $stmtCheckEmail->close();
+            $conecta->close();
+            return;
+        }
+
+        // Verifica se o username já está em uso
+        $checkUsernameQuery = "SELECT * FROM tb_usuario WHERE user_name = ?";
+        $stmtCheckUsername = $conecta->prepare($checkUsernameQuery);
+        $stmtCheckUsername->bind_param("s", $username);
+        $stmtCheckUsername->execute();
+        $resultUsername = $stmtCheckUsername->get_result();
+
+        if ($resultUsername->num_rows > 0) {
+            // Username já está em uso
+            echo "Erro: Esse user já existe.";
+            $stmtCheckUsername->close();
+            $conecta->close();
+            return;
+        }
+
+        // Insere o novo registro
+        $stmt = $conecta->prepare("INSERT INTO tb_usuario (user_first_name, user_last_name, user_name, user_email, user_password) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $first_name, $last_name, $username, $email, $hashedPassword);
 
         $mail = new PHPMailer(true);
         try {
-            if ($stmt->execute())  {
-                //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-                $mail->isSMTP();                                            //Send using SMTP
-                $mail->Host = 'sandbox.smtp.mailtrap.io';                     //Set the SMTP server to send through
-                $mail->SMTPAuth = true;                                   //Enable SMTP authentication
-                $mail->Username = '0c58445a22fa36';                     //SMTP usernsame
-                $mail->Password = '24d6d9aaf85bab';                               //SMTP password
-                //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
-                $mail->SMTPSecure = 'tls';          //Enable implicit TLS encryption
+            $mail-> CharSet = 'UTF-8';
+            if ($stmt->execute()) {
+                $mail->isSMTP();
+                $mail->Host = 'sandbox.smtp.mailtrap.io';
+                $mail->SMTPAuth = true;
+                $mail->Username = '0c58445a22fa36';
+                $mail->Password = '24d6d9aaf85bab';
+                $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
                 $mail->Timeout = 5;
 
                 $mail->setFrom('techqa.pida@gmail.com', 'TechQA');
                 $mail->addAddress($email, $username);
 
-                $mail->isHTML(true);                                  //Set email format to HTML
+                $mail->isHTML(true);
                 $mail->Subject = 'Confirmar Cadastro';
-                $mail->Body = "Clique no link para poder confirmar o email e ter acesso a conta <a href= 'http://localhost:3000/login.php'>Clique Aqui</a>";
+                $mail->Body = "Clique no link para poder confirmar o email e ter acesso a conta <a href='http://localhost:3000/login.php'>Clique Aqui</a>";
                 $mail->AltBody = "Clique no link para poder confirmar o email e ter acesso a conta http://localhost:3000/login.php";
 
                 $mail->send();
                 echo "Confirme a sua conta pelo email para poder acessa-la";
-                //header("Location: cadastro.php");
 
             } else {
                 echo "Erro no cadastro: " . $stmt->error;
@@ -52,48 +81,62 @@ class funcoes
         } catch (Exception $e) {
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
+
         $stmt->close();
+        $stmtCheckEmail->close();
+        $stmtCheckUsername->close();
         $conecta->close();
-
     }
-
 
 
     public function esquecer_senha($email)
     {
-        
-        $mail = new PHPMailer(true);
-        try {
-            
-                //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-                $mail->isSMTP();                                            //Send using SMTP
-                $mail->Host = 'sandbox.smtp.mailtrap.io';                     //Set the SMTP server to send through
-                $mail->SMTPAuth = true;                                   //Enable SMTP authentication
-                $mail->Username = '0c58445a22fa36';                     //SMTP usernsame
-                $mail->Password = '24d6d9aaf85bab';                               //SMTP password
-                //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
-                $mail->SMTPSecure = 'tls';          //Enable implicit TLS encryption
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        // Verifica se o email está registrado
+        $checkEmailQuery = "SELECT * FROM tb_usuario WHERE user_email = ?";
+        $stmtCheckEmail = $conecta->prepare($checkEmailQuery);
+        $stmtCheckEmail->bind_param("s", $email);
+        $stmtCheckEmail->execute();
+        $resultEmail = $stmtCheckEmail->get_result();
+
+        if ($resultEmail->num_rows > 0) {
+            // Email está registrado, envia o email de redefinição de senha
+            $mail = new PHPMailer(true);
+            try {
+                $mail-> CharSet = 'UTF-8';
+                $mail->isSMTP();
+                $mail->Host = 'sandbox.smtp.mailtrap.io';
+                $mail->SMTPAuth = true;
+                $mail->Username = '0c58445a22fa36';
+                $mail->Password = '24d6d9aaf85bab';
+                $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
                 $mail->Timeout = 5;
 
                 $mail->setFrom('techqa.pida@gmail.com', 'TechQA');
                 $mail->addAddress($email);
 
-                $mail->isHTML(true);                                  //Set email format to HTML
-                $mail->Subject = 'Confirmar Cadastro';
-                $mail->Body = "Clique no link para poder confirmar o email e ter acesso a conta <a href= 'http://localhost:3000/esqueci_senha.php'>Clique Aqui</a>";
-                $mail->AltBody = "Clique no link para poder confirmar o email e ter acesso a conta http://localhost:3000/esqueci_senha.php";
+                $mail->isHTML(true);
+                $mail->Subject = 'Redefinição de Senha';
+                $mail->Body = "Clique no link para poder redefinir sua senha <a href='http://localhost:3000/esqueci_senha.php?id=$email'>Clique Aqui</a>";
+                $mail->AltBody = "Clique no link para poder redefinir sua senha http://localhost:3000/esqueci_senha.php";
 
                 $mail->send();
-                echo "Confirme a sua conta pelo email para poder acessa-la";
-                //header("Location: cadastro.php");
-
+                echo "Um email foi enviado para o endereço fornecido para redefinir sua senha.";
             } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        } else {
+            // Email não está registrado
+            echo "Erro: Este email não está registrado.";
         }
-        
 
+        $stmtCheckEmail->close();
+        $conecta->close();
     }
+
 
     public function atualizarInformacoesUsuario($user_id, $user_description, $habilidades, $habilidade_descricao, $empresa, $cargo)
     {
@@ -139,41 +182,71 @@ class funcoes
         $conexao->desconectar();
     }
 
-    public function logar($email, $password)
+    public function atualizar_senha($email, $password)
 {
     $conexao = new conexaoDB();
     $conecta = $conexao->conectar();
 
-    $stmt = $conecta->prepare("SELECT id_user, user_password FROM tb_usuario WHERE user_email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    // Preparar a declaração SQL para evitar injeção de SQL
+    $stmt = $conecta->prepare("UPDATE `tb_usuario` SET `user_password` = ? WHERE `user_email` = ?");
+    
+    // Verificar se a preparação foi bem-sucedida
+    if ($stmt === false) {
+        echo "Erro ao preparar a consulta: " . $conecta->error;
+        return;
+    }
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id_user, $hashedPassword);
-        $stmt->fetch();
-        
-        if (password_verify($password, $hashedPassword)) {
-            $stmt->close();
-            $conecta->close();
-            
-            return $id_user;
+    // Vincular os parâmetros
+    $stmt->bind_param('ss', $password, $email);
+
+    // Executar a consulta
+    if ($stmt->execute()) {
+        echo "Senha atualizada com sucesso!";
+    } else {
+        echo "Erro ao atualizar a senha: " . $stmt->error;
+    }
+
+    // Fechar a declaração e a conexão
+    $stmt->close();
+    $conexao->desconectar();
+}
+
+
+    public function logar($email, $password)
+    {
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+
+        $stmt = $conecta->prepare("SELECT id_user, user_password FROM tb_usuario WHERE user_email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($id_user, $hashedPassword);
+            $stmt->fetch();
+
+            if (password_verify($password, $hashedPassword)) {
+                $stmt->close();
+                $conecta->close();
+
+                return $id_user;
+            } else {
+                $stmt->close();
+                $conecta->close();
+
+                echo "E-mail ou senha incorretos.";
+                return false;
+            }
         } else {
             $stmt->close();
             $conecta->close();
-            
+
             echo "E-mail ou senha incorretos.";
             return false;
         }
-    } else {
-        $stmt->close();
-        $conecta->close();
-        
-        echo "E-mail ou senha incorretos.";
-        return false;
     }
-}
-    
+
     public function display_name($id_user)
     {
         $conexao = new conexaoDB();

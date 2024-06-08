@@ -136,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container">
         <h2>Login</h2>
-        <form action="login.php" method="POST">
+        <form action="temporario.php" method="POST">
             <div class="form-group">
                 <label for="email">E-mail:</label>
                 <input type="email" id="email" name="email" required>
@@ -146,8 +146,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Logar</button>
-            <h6>Nao possui conta? <a href="cadastro.php">Clique Aqui</a></h6>
-            <h6>Esqueceu sua senha? <a href="esqueci_senha.php">Clique Aqui</a></h6>
+            <br>
+            <br>
+            <h6>Nao possui conta? <a href="cadastro.php" >Clique Aqui</a></h6>
+            <br>
+            <h6>Esqueceu sua senha? <a href="email_redef_senha.php" target="_blank">Clique Aqui</a></h6>
         </form>
         <?php
 
