@@ -145,7 +145,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit">Logar</button>
             <h6>Nao possui conta? <a href="cadastro.php">Clique Aqui</a></h6>
-            <h6>Esqueceu sua senha? <a href="esqueci_senha.php">Clique Aqui</a></h6>
+            <br>
+            <h6>Esqueceu sua senha? <a href="email_redef_senha.php">Clique Aqui</a></h6>
         </form>
         <?php
 

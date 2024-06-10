@@ -36,7 +36,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill"> Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: ' . $linha['avaliacao_post'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -52,7 +52,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Likes: ' . $linha['avaliacao_post'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -103,7 +103,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill"> Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: ' . $linha['avaliacao_post'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -119,7 +119,7 @@ class resultados
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Likes: ' . $linha['avaliacao_post'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -141,7 +141,7 @@ class resultados
     }
 
 
-    
+
 
     public function fechar_post($id_post)
     {
@@ -237,9 +237,28 @@ class resultados
 
                 echo '<div class="post">
                 <div>
-                <a href="perfil_usuario_alt.php?id='. $linha['user_id'] .'" target="_blank"><h2>' . $linha['user_name'] . '</h2></a>
+                <a href="perfil_usuario_alt.php?id=' . $linha['user_id'] . '" target="_blank"><h2>' . $linha['user_name'] . '</h2></a>
                     <header class="cabeca_post">
-                    <div id="counter">'.$linha['avaliacao_post'] .'</div>
+                    <div id="counter">' . $linha['avaliacao_post'] . '</div>
+                    <button class="reportButton">Report</button>
+
+                    <div id="reportModal_' . $linha['id_pergunta'] . '" class="reportModal escondido">
+                        <div class="modal-content">
+                            <h2>Report Post</h2>
+                            <p>Select the reason for reporting this post:</p>
+                            <form action="temporario.php" id="reportForm_' . $linha['id_pergunta'] . '" method="POST">
+                                <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
+                                <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
+                                <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
+                                <label><input type="checkbox" name="reason[]" value="Other" class="otherCheckbox"> Other</label><br>
+                                <input type="text" class="otherReasonInput" name="otherReason" placeholder="Please describe the reason">
+
+                                <input type="hidden" name="id_pergunta" value="' . $linha['id_pergunta'] . '">
+                                <button type="submit" class="submitReportButton">Submit</button>
+                                <button type="button" class="cancelReportButton">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
                         <h4>' .
                     $linha['pergunta_title']
                     . '
@@ -271,8 +290,7 @@ class resultados
                         <a class="btn btn-danger" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
                         Editar Postagem
                         </a>';
-                    }
-                    else{
+                    } else {
                         echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
                         Excluir Postagem
                         </a>
@@ -458,7 +476,7 @@ class resultados
                 <div class="card-body">
                     <h5 class="card-title">' . $linha['tag_name'] . '</h5>
                     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="pag_perguntas_tags.php?id= '. $linha['id_tags'].'" class="btn btn-primary">Perguntas Com Essa Tag</a>
+                    <a href="pag_perguntas_tags.php?id= ' . $linha['id_tags'] . '" class="btn btn-primary">Perguntas Com Essa Tag</a>
                 </div>
             </div>';
             }
@@ -474,7 +492,8 @@ class resultados
 
     }
 
-    public function incrementValue($id_post, $id_user){
+    public function incrementValue($id_post, $id_user)
+    {
 
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
@@ -494,41 +513,42 @@ class resultados
         }
     }
 
-   /* public function editar_post($post_id, $post_title, $pergunta_descricao){
+    /* public function editar_post($post_id, $post_title, $pergunta_descricao){
 
+         $conexao = new conexaoDB();
+         $conecta = $conexao->conectar();
+
+         $sql = "UPDATE `tb_usuario` SET ";
+         if (!empty($post_title)) {
+             $sql .= "`pergunta_title` = '$post_title', ";
+         }
+         if (!empty($pergunta_descricao)) {
+             $sql .= "`pergunta_descricao` = '$pergunta_descricao', ";
+         }
+         
+         // Remover a última vírgula
+         $sql = rtrim($sql, ', ');
+
+         $sql .= " WHERE `id_pergunta` = $post_id;";
+
+         // Executar a consulta
+         if (mysqli_query($conecta, $sql)) {
+             echo "Informações do usuário atualizadas com sucesso!";
+         } else {
+             echo "Erro ao atualizar informações do usuário: " . mysqli_error($conecta);
+         }
+
+         $conexao->desconectar();
+     }*/
+    public function editar_post($post_id, $post_title, $pergunta_descricao)
+    {
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
 
-        $sql = "UPDATE `tb_usuario` SET ";
-        if (!empty($post_title)) {
-            $sql .= "`pergunta_title` = '$post_title', ";
-        }
-        if (!empty($pergunta_descricao)) {
-            $sql .= "`pergunta_descricao` = '$pergunta_descricao', ";
-        }
-        
-        // Remover a última vírgula
-        $sql = rtrim($sql, ', ');
-
-        $sql .= " WHERE `id_pergunta` = $post_id;";
-
-        // Executar a consulta
-        if (mysqli_query($conecta, $sql)) {
-            echo "Informações do usuário atualizadas com sucesso!";
-        } else {
-            echo "Erro ao atualizar informações do usuário: " . mysqli_error($conecta);
-        }
-
-        $conexao->desconectar();
-    }*/
-    public function editar_post($post_id, $post_title, $pergunta_descricao){
-        $conexao = new conexaoDB();
-        $conecta = $conexao->conectar();
-    
         $sql = "UPDATE `tb_pergunta` SET ";
         $params = [];
         $types = "";
-    
+
         if (!empty($post_title)) {
             $sql .= "`pergunta_title` = ?, ";
             $params[] = $post_title;
@@ -539,27 +559,27 @@ class resultados
             $params[] = $pergunta_descricao;
             $types .= "s";
         }
-    
+
         // Remover a última vírgula
         $sql = rtrim($sql, ', ');
-    
+
         $sql .= " WHERE `id_pergunta` = ?";
         $params[] = $post_id;
         $types .= "i";
-    
+
         $stmt = $conecta->prepare($sql);
         $stmt->bind_param($types, ...$params);
-    
+
         if ($stmt->execute()) {
             echo "Informações do usuário atualizadas com sucesso!";
         } else {
             echo "Erro ao atualizar informações do usuário: " . $stmt->error;
         }
-    
+
         $stmt->close();
         $conexao->desconectar();
     }
-    
+
 
 
 }

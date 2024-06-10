@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +33,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
         }
@@ -82,13 +81,15 @@
         <div class="modal-content">
             <h2>Report Post</h2>
             <p>Select the reason for reporting this post:</p>
-            <form id="reportForm">
-                <label><input type="checkbox" name="reason" value="Spam"> Spam</label><br>
-                <label><input type="checkbox" name="reason" value="Inappropriate Content"> Inappropriate Content</label><br>
-                <label><input type="checkbox" name="reason" value="Harassment"> Harassment</label><br>
-                <label><input type="checkbox" name="reason" value="Other" id="otherCheckbox"> Other</label><br>
-                <input type="text" id="otherReasonInput" placeholder="Please describe the reason">
-                <button type="button" id="submitReportButton">Submit</button>
+            <form action="temporario.php" id="reportForm" method="POST">
+                <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
+                <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
+                <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
+                <label><input type="checkbox" name="reason[]" value="Other" id="otherCheckbox"> Other</label><br>
+                <input type="text" id="otherReasonInput" name="otherReason" placeholder="Please describe the reason">
+                <!-- Campo oculto para o ID da pergunta -->
+                <input type="hidden" name="id_pergunta" value="5">
+                <button type="submit" id="submitReportButton">Submit</button>
                 <button type="button" id="cancelReportButton">Cancel</button>
             </form>
         </div>
@@ -114,21 +115,16 @@
             dismissMessageButton.addEventListener('click', function () {
                 confirmationMessage.classList.add('hidden');
             });
-        });
 
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
             const reportButton = document.getElementById('reportButton');
             const reportModal = document.getElementById('reportModal');
-            const submitReportButton = document.getElementById('submitReportButton');
-            const cancelReportButton = document.getElementById('cancelReportButton');
+            const reportForm = document.getElementById('reportForm');
             const otherCheckbox = document.getElementById('otherCheckbox');
             const otherReasonInput = document.getElementById('otherReasonInput');
+            const cancelReportButton = document.getElementById('cancelReportButton');
 
             reportButton.addEventListener('click', function () {
-                reportModal.classList.remove('hidden');
+                reportModal.style.display = 'flex';
             });
 
             otherCheckbox.addEventListener('change', function () {
@@ -139,26 +135,10 @@
                 }
             });
 
-            submitReportButton.addEventListener('click', function () {
-                const selectedReasons = Array.from(document.querySelectorAll('input[name="reason"]:checked'))
-                    .map(checkbox => checkbox.value);
-
-                if (otherCheckbox.checked) {
-                    selectedReasons.push(otherReasonInput.value);
-                }
-
-                console.log('Report submitted for reasons:', selectedReasons);
-
-                // Logic to handle the report submission (e.g., send to server) goes here
-
-                reportModal.classList.add('hidden');
-            });
-
             cancelReportButton.addEventListener('click', function () {
-                reportModal.classList.add('hidden');
+                reportModal.style.display = 'none';
             });
         });
-
     </script>
 </body>
 
