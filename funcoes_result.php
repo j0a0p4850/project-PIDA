@@ -240,13 +240,14 @@ class resultados
                 <a href="perfil_usuario_alt.php?id=' . $linha['user_id'] . '" target="_blank"><h2>' . $linha['user_name'] . '</h2></a>
                     <header class="cabeca_post">
                     <div id="counter">' . $linha['avaliacao_post'] . '</div>
-                    <button class="reportButton">Report</button>
+                    <button class="reportButton">Denunciar</button>
+                    
 
                     <div id="reportModal_' . $linha['id_pergunta'] . '" class="reportModal escondido">
                         <div class="modal-content">
                             <h2>Report Post</h2>
                             <p>Select the reason for reporting this post:</p>
-                            <form action="temporario.php" id="reportForm_' . $linha['id_pergunta'] . '" method="POST">
+                            <form action="process_report.php" id="reportForm_' . $linha['id_pergunta'] . '" method="POST">
                                 <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
                                 <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
                                 <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
@@ -263,6 +264,8 @@ class resultados
                     $linha['pergunta_title']
                     . '
                         </h4>
+                        <button id="incrementBtn">Curtir</button>
+                        <button id="decrementBtn">Descurtir</button>
                     </header>
                     
                 </div>
@@ -277,7 +280,9 @@ class resultados
                     <br>
                     ' . $linha['tag_id'] . '
                 </div>
-            </div>';
+                
+            </div>
+            ';
 
                 if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["user_id"]) {
                     if ($linha['status_pergunta'] == 'Aberta') {
@@ -338,48 +343,185 @@ class resultados
         $conexao->desconectar();
     }
 
-    public function post_resp($id_post, $id_user)
+    public function inserir_comentarios($comment_body, $id_user, $resp_id)
     {
-
-
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
 
-        $sql = "SELECT p.id_pergunta, c.id_comentario, c.comentario_corpo, c.id_user
-        FROM tb_pergunta p
-        JOIN tb_comentarios c ON p.id_pergunta = c.id_pergunta
-        WHERE p.id_pergunta = '$id_post';";
-        $resultado = $conecta->query($sql);
-        if ($resultado->num_rows > 0) {
-            while ($linha = $resultado->fetch_assoc()) {
+
+        $sql = "INSERT INTO `tb_resposta` (`resposta_descricao`, `pergunta_id`, `user_id`, `id_comentario`, `data_publicacao`) VALUES (?, ?, ?, ?, NOW())";
 
 
-                echo '
-    <h3>' . ($linha['id_user']) . '</h3>
-    <div class="resp">' . ($linha['comentario_corpo']) . '</div>';
+        $stmt = $conecta->prepare($sql);
 
-                if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["id_user"]) {
-                    echo '<a class="btn btn-danger" href="excluir_processar_comentario.php?comentario_id=' . ($linha['id_comentario']) . '">
-                    Excluir
-                    </a>';
-                }
 
-                echo '</div>';
-            }
+        $stmt->bind_param("ssss", $comment_body, $id_post, $id_user, $resp_id);
 
+
+        if ($stmt->execute()) {
+            header("Location: pagina_de_resultados.php");
+            exit();
         } else {
-            echo 'Não há nenhuma pergunta feita ainda';
+            echo "Erro: " . $stmt->error . "<br>";
         }
 
+
+        $stmt->close();
         $conexao->desconectar();
     }
 
+    public function post_resp($id_post, $id_user)
+    {
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
+    
+        $sql = "SELECT p.id_pergunta, 
+       c.id_comentario, 
+       c.comentario_corpo, 
+       c.id_user AS comentario_user_id,
+       r.id_resposta,
+       r.resposta_descricao,
+       r.user_id AS resposta_user_id,
+       u.user_name AS comentario_user_name,
+       u2.user_name AS resposta_user_name
+FROM tb_pergunta p
+JOIN tb_comentarios c ON p.id_pergunta = c.id_pergunta
+JOIN tb_usuario u ON c.id_user = u.id_user
+LEFT JOIN tb_resposta r ON c.id_comentario = r.id_comentario
+LEFT JOIN tb_usuario u2 ON r.user_id = u2.id_user
+WHERE p.id_pergunta = '$id_post';";
+        $resultado = $conecta->query($sql);
+    
+        if ($resultado->num_rows > 0) {
+            while ($linha = $resultado->fetch_assoc()) {
+    
+                echo '
+                <div class="display_resp">
+                    <h3>' . ($linha['comentario_user_name']) . '</h3>
+                    <button class="reportButton">Denunciar</button> 
+                    <div class="resp">' . ($linha['comentario_corpo']) . '
+                    ';
+                    if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["comentario_user_id"]) {
+                        echo '
+                        <a class="btn btn-danger" href="excluir_processar_comentario.php?comentario_id=' . ($linha['id_comentario']) . '">
+                            Excluir
+                        </a>
+                        <a class="btn btn-danger" href="edit_comentario_pag.php?comentario_edicao_id=' . ($linha['id_comentario']) . '">
+                            Editar
+                        </a>';
+                        
+                    }
+                   echo' <button id="incrementBtn">Curtir</button>
+                <button id="decrementBtn">Descurtir</button>
+                </div>
+                    
+                    <div class="resp">
+                    <h3>comentario</h3>' . ($linha['resposta_descricao']) . '';
+                    if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["comentario_user_id"]) {
+                        echo '
+                        <a class="btn btn-danger" href="excluir_processar_resp.php?resp_id=' . ($linha['id_resposta']) . '">
+                            Excluir
+                        </a>';
+                    }
+                    
+                   echo '</div>';
+                    
+    
+                
+    
+                echo '
+                
+    
+                <div class="area_comentario" id="commentForm">
+                    <form action="process_comentario.php" id="comentForm_'.$linha['id_comentario'].'" class="area_texto" method="POST">
+                    <input type="hidden" name="id" value="'.$linha['id_comentario'].'">
+                        <div class="area_texto">
+                            <textarea id="Comentario_resps" placeholder="Escreva o comentario aqui" name="comment_body"></textarea>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-danger">Comentar</button>
+                    </form>
+                </div>
+            </div>';
+            }
+        } else {
+            echo " ";
+        }
+    
+        $conexao->desconectar();
+    }
+    
+
     public function excluirComentario($comentarioId)
+{
+    $conexao = new conexaoDB();
+    $conecta = $conexao->conectar();
+
+    // Iniciar a transação
+    $conecta->begin_transaction();
+
+    try {
+        // Excluir a resposta associada ao comentário, se existir
+        $sqlDeleteResposta = "DELETE FROM tb_resposta WHERE id_comentario = ?";
+        $stmtDeleteResposta = $conecta->prepare($sqlDeleteResposta);
+        if ($stmtDeleteResposta === false) {
+            throw new Exception('Erro na preparação do statement para excluir resposta: ' . $conecta->error);
+        }
+
+        $stmtDeleteResposta->bind_param("i", $comentarioId);
+        if (!$stmtDeleteResposta->execute()) {
+            throw new Exception('Erro na execução do statement para excluir resposta: ' . $stmtDeleteResposta->error);
+        }
+
+        // Não precisamos verificar $stmtDeleteResposta->affected_rows aqui porque a exclusão pode falhar se não houver resposta associada
+
+        // Excluir o comentário
+        $sqlDeleteComentario = "DELETE FROM tb_comentarios WHERE id_comentario = ?";
+        $stmtDeleteComentario = $conecta->prepare($sqlDeleteComentario);
+        if ($stmtDeleteComentario === false) {
+            throw new Exception('Erro na preparação do statement para excluir comentário: ' . $conecta->error);
+        }
+
+        $stmtDeleteComentario->bind_param("i", $comentarioId);
+        if (!$stmtDeleteComentario->execute()) {
+            throw new Exception('Erro na execução do statement para excluir comentário: ' . $stmtDeleteComentario->error);
+        }
+
+        // Verificar se a exclusão do comentário foi bem-sucedida
+        if ($stmtDeleteComentario->affected_rows > 0) {
+            // Confirmar a transação
+            $conecta->commit();
+            echo "Comentário e resposta associados (se houver) excluídos com sucesso.";
+        } else {
+            // Rolback da transação em caso de falha na exclusão do comentário
+            $conecta->rollback();
+            echo "Falha ao excluir o comentário.";
+        }
+    } catch (Exception $e) {
+        // Em caso de exceção, rolar para trás a transação
+        $conecta->rollback();
+        echo "Erro ao excluir o comentário e a resposta: " . $e->getMessage();
+    } finally {
+        // Fechar os statements se foram inicializados
+        if (isset($stmtDeleteResposta)) {
+            $stmtDeleteResposta->close();
+        }
+        if (isset($stmtDeleteComentario)) {
+            $stmtDeleteComentario->close();
+        }
+
+        // Desconectar
+        $conexao->desconectar();
+    }
+}
+
+
+    public function excluirResposta($resp_id)
     {
 
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-        $sql = "DELETE FROM tb_comentarios WHERE id_comentario = '$comentarioId';";
+        $sql = "DELETE FROM tb_resposta WHERE id_resposta = '$resp_id';";
         $conecta->query($sql);
         $conexao->desconectar();
 
@@ -579,6 +721,32 @@ class resultados
         $stmt->close();
         $conexao->desconectar();
     }
+
+    public function editar_comentario($coment_id, $comentario_corpo)
+{
+    $conexao = new conexaoDB();
+    $conecta = $conexao->conectar();
+
+    $sql = "UPDATE `tb_comentarios` SET `comentario_corpo` = ? WHERE `id_comentario` = ?";
+    
+    $stmt = $conecta->prepare($sql);
+    if (!$stmt) {
+        echo "Erro ao preparar a consulta: " . $conecta->error;
+        return;
+    }
+
+    $stmt->bind_param('si', $comentario_corpo, $coment_id);
+
+    if ($stmt->execute()) {
+        echo "Informações do comentário atualizadas com sucesso!";
+    } else {
+        echo "Erro ao atualizar informações do comentário: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conexao->desconectar();
+}
+
 
 
 

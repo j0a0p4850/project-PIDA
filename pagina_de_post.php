@@ -1,6 +1,21 @@
 <?php
 session_start();
 include "funcoes_result.php";
+$func = new resultados();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $resp_body = $_POST['resp_body'];
+    if (isset($_GET['id']) && isset($_SESSION['login'])) {
+        $id_user = $_SESSION['login'];
+        $id_post = $_GET['id'];
+        $func->Answer($resp_body, $id_post, $id_user);
+    }
+
+
+
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,14 +95,26 @@ include "funcoes_result.php";
             margin-top: 10px;
             height: fit-content;
             width: 1020px;
-            border-bottom: black 3px solid;
+            border: black 3px solid;
+
         }
 
         .resp {
             margin-top: 10px;
-            width: 1020px;
+            justify-content: center;
             height: fit-content;
-            border-bottom: black 3px solid;
+            border: black 3px solid;
+        }
+        .display_resp{
+            margin-left: 50px;
+            width: 700px;
+        }
+
+        .area_comentario{
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
         }
 
         .container {
@@ -96,6 +123,7 @@ include "funcoes_result.php";
             align-items: center;
             justify-content: center;
         }
+
 
         .container_area_texto {
             margin-top: 10px;
@@ -132,16 +160,14 @@ include "funcoes_result.php";
 
     <div class="container">
         <?php
-        $func = new resultados();
+        
 
         if (isset($_GET['id'])) {
-
             $id_post = $_GET['id'];
             $func->post_display($id_post);
         }
         ?>
-        <button id="incrementBtn">Aumentar</button>
-        <button id="decrementBtn">Diminuir</button>
+
 
         <?php
         $func = new resultados();
@@ -156,28 +182,14 @@ include "funcoes_result.php";
 
             <div class="container_area_texto">
 
-                <form action="#" method="POST" id="respForm" class="area_texto hidden">
+                <form action="#" method="POST" id="respForm" class="area_texto ">
                     <label for="resp">Resposta</label>
                     <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
                     <br>
-                    <button type="submit" class="btn btn-info">Botao</button>
+                    <button type="submit" class="btn btn-info">Enviar Resposta</button>
                 </form>
 
-                <?php
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    $resp_body = $_POST['resp_body'];
-                    if (isset($_GET['id']) && isset($_SESSION['login'])) {
-                        $id_user = $_SESSION['login'];
-                        $id_post = $_GET['id'];
-                        $func->Answer($resp_body, $id_post, $id_user);
-                    }
 
-
-
-                }
-
-
-                ?>
                 <br>
 
 
@@ -186,17 +198,7 @@ include "funcoes_result.php";
             <br>
 
 
-            <div class="container_area_texto" id="commentForm" class="area_texto hidden">
-                <form action="comentario" id="comentForm" class="area_texto hidden">
-                    <div class="area_texto">
-                        <textarea id="Comentario_resps" placeholder="Escreva o comentario aqui "></textarea>
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-danger">Enviar</button>
-                </form>
-
-
-            </div>
+            
         </div>
 
         <script>
@@ -240,22 +242,22 @@ include "funcoes_result.php";
             const incrementBtn = document.getElementById('incrementBtn');
             const decrementBtn = document.getElementById('decrementBtn');
 
-            // Função para enviar a requisição AJAX de incremento
+            
             function incrementCounter() {
                 const idPost = new URLSearchParams(window.location.search).get('id');
-                console.log('ID do Post:', idPost); // Log de depuração
+                console.log('ID do Post:', idPost); 
 
                 if (idPost) {
                     fetch('increment.php', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded', // Tipo de conteúdo
+                            'Content-Type': 'application/x-www-form-urlencoded', 
                         },
-                        body: 'id=' + encodeURIComponent(idPost) // Enviar dados no formato correto
+                        body: 'id=' + encodeURIComponent(idPost) 
                     })
                         .then(response => response.json())
                         .then(data => {
-                            console.log('Resposta do servidor:', data); // Log de depuração
+                            console.log('Resposta do servidor:', data); 
                             if (data.status === 'success') {
                                 alert('Valor incrementado com sucesso!');
                             } else {
@@ -268,7 +270,7 @@ include "funcoes_result.php";
                 }
             }
 
-            // Adicionando evento ao botão de incremento
+            
             incrementBtn.addEventListener('click', incrementCounter);
         </script>
 
@@ -284,7 +286,7 @@ include "funcoes_result.php";
                 });
 
                 confirmCancelButton.addEventListener('click', function () {
-                    // Handle the actual cancellation logic here
+                    
                     confirmationMessage.classList.add('escondido');
                     console.log('Cancelled');
                 });

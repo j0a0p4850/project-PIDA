@@ -28,7 +28,7 @@ session_start();
 
         /* Cabeçalho */
         header {
-            background-color: #333;
+            background-color: #f8f9fa;
             color: #fff;
             padding: 10px;
             text-align: center;
@@ -55,6 +55,39 @@ session_start();
         /* Seção de perguntas e respostas */
         main {
             padding: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+            display: flex;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 7px;
+        }
+
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            z-index: 10;
+            color: #000;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
         }
 
         .question {
@@ -106,7 +139,7 @@ session_start();
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="index.php">Navbar</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -127,12 +160,15 @@ session_start();
                             <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
                         </li>
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="text" id="live_search" placeholder="Search"
-                            aria-label="Search">
-                        <div id="searchresult"></div>
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Pesquisar..."
+                            oninput="buscarSugestoes(this.value)">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
+                        <div class="suggestions-container" id="suggestions">
+
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
         </nav>
@@ -140,17 +176,16 @@ session_start();
 
     <div class="card c1" style="width: 18rem;">
         <div class="card-body">
-            <h5 class="card-title">Filtros</h5>
+            <h5 class="card-title">Filtrar</h5>
             <div>
                 <br>
             </div>
             <ul class="list-group">
                 <li class="list-group-item">
                     <div id="status" style="height: 180px; overflow-y: auto; overflow-x: hidden;">
-                        <input class="common_selector status" type="checkbox" name="status" id="abertos" value="Aberta">
+                        <input class="common_selector status" type="radio" name="status" id="abertos" value="Aberta">
                         <label for="abertos">Abertos</label><br>
-                        <input class="common_selector status" type="checkbox" name="status" id="fechados"
-                            value="Fechada">
+                        <input class="common_selector status" type="radio" name="status" id="fechados" value="Fechada">
                         <label for="fechados">Fechadas</label><br>
                     </div>
                 </li>
@@ -170,9 +205,7 @@ session_start();
                     </select>
                     <span id="valorAno"></span>
                 </li>
-                <li class="list-group-item"><button type="button" id="btnFiltrar" class="btn btn-info"
-                        data-bs-dismiss="modal">Filtrar</button>
-                    <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
+                <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
                 </li>
             </ul>
         </div>
@@ -208,24 +241,36 @@ session_start();
         });
     </script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#live_search").keyup(function () {
-                var input = $(this).val();
-                if (input != "") {
-                    $.ajax({
-                        url: "livesearch.php",
-                        method: "POST",
-                        data: { input: input },
-                        success: function (data) {
-                            $("#searchresult").html(data);
-                        }
-                    });
-                } else {
-                    $("#searchresult").html("");
-                }
-            });
-        });
+    <script>
+        function buscarSugestoes(inputVal) {
+            if (inputVal.length > 0) {
+                fetch('livesearch.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'input=' + encodeURIComponent(inputVal)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const suggestionsContainer = document.getElementById('suggestions');
+                        suggestionsContainer.innerHTML = '';
+                        data.forEach(sugestao => {
+                            const div = document.createElement('div');
+                            div.textContent = sugestao;
+                            div.classList.add('suggestion-item');
+                            div.onclick = function () {
+                                document.querySelector('.search-input').value = this.textContent;
+                                suggestionsContainer.innerHTML = '';
+                            };
+                            suggestionsContainer.appendChild(div);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
     </script>
 
     <script>
