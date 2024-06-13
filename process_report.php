@@ -6,42 +6,34 @@ $conexao = new conexaoDB();
 $func = new administrador_func($conexao->conectar());
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    session_start(); // Certifique-se de iniciar a sessão
+    
+    if (isset($_SESSION['login'])) {
 
-    $id_user = null;  
-    $reasons = isset($_POST['reason']) ? $_POST['reason'] : [];
-    $otherReason = isset($_POST['otherReason']) ? $_POST['otherReason'] : '';
-    $id_pergunta = isset($_POST['id_pergunta']) ? $_POST['id_pergunta'] : null;
+        $id_user_q_denunciou = $_SESSION['login'];
+        $id_user = null;
+        $reasons = isset($_POST['reason']) ? $_POST['reason'] : [];
+        $otherReason = isset($_POST['otherReason']) ? $_POST['otherReason'] : '';
+        $id_coringa = null;
 
-    //$func->denuncia_registro($reasons, $otherReason, $id_user, $reportType, $id_pergunta, $id_comentario, $id_resposta);
-
-    // Chamando a função para processar o relatório
-    $func->denuncia_registro($reasons, $otherReason, $id_user, 'pergunta', $id_pergunta, null, null);
+        if (isset($_POST['id_pergunta'])) {
+            $id_coringa = $_POST['id_pergunta'];
+            $func->denuncia_registro($reasons, $otherReason, $id_user, $id_coringa, $id_user_q_denunciou , 'pergunta');
+        } elseif (isset($_POST['id_comentario'])) {
+            $id_coringa = $_POST['id_comentario'];
+            $func->denuncia_registro($reasons, $otherReason, $id_user, $id_coringa, $id_user_q_denunciou, 'comentario');
+        } elseif (isset($_POST['id_resposta'])){
+            $id_coringa = $_POST['id_resposta'];
+            $func->denuncia_registro($reasons, $otherReason, $id_user, $id_coringa, $id_user_q_denunciou, 'resposta');
+        } else {
+            echo 'ERROR: No valid ID provided.';
+        }
+        
+    } else {
+        header('Location: login.php');
+        exit(); // Certifique-se de sair após o redirecionamento
+    }
+} else {
+    echo 'No POST request received.';
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Confirmation</title>
-</head>
-<body>
-    <h1>Report Confirmation</h1>
-    <p>Reasons for reporting:</p>
-    <ul>
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (!empty($reasons)) {
-                foreach ($reasons as $reason) {
-                    echo "<li>" . htmlspecialchars($reason) . "</li>";
-                }
-            }
-            if (!empty($otherReason)) {
-                echo "<li>Other: " . htmlspecialchars($otherReason) . "</li>";
-            }
-        }
-        ?>
-    </ul>
-</body>
-</html>

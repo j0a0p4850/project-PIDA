@@ -5,11 +5,18 @@ $func = new resultados();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resp_body = $_POST['resp_body'];
-    if (isset($_GET['id']) && isset($_SESSION['login'])) {
-        $id_user = $_SESSION['login'];
-        $id_post = $_GET['id'];
-        $func->Answer($resp_body, $id_post, $id_user);
+    if (isset($_GET['id'])) {
+        if (isset($_SESSION['login'])) {
+            $id_user = $_SESSION['login'];
+            $id_post = $_GET['id'];
+            $func->Answer($resp_body, $id_post, $id_user);
+        } else {
+            header('Location: login.php');
+        }
+    } else {
+        echo 'Ocorreu algum erro, por favor tente novamente mais tarde';
     }
+
 
 
 
@@ -95,22 +102,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 10px;
             height: fit-content;
             width: 1020px;
-            border: black 3px solid;
+
 
         }
 
         .resp {
             margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            flex-wrap: wrap;
             height: fit-content;
-            border: black 3px solid;
+
         }
-        .display_resp{
-            margin-left: 50px;
+
+        .display_resp {
+            margin-left: 100px;
+            margin-top: 30px;
             width: 700px;
         }
 
-        .area_comentario{
+        .area_comentario {
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -122,6 +135,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            flex-wrap: wrap;
+
         }
 
 
@@ -153,22 +168,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .teste {
             height: 300px;
         }
+
+        .comentario_resp {
+            display: contents;
+        }
+        .botoes{
+            margin-left: 16rem;
+        }
+        .corpo{
+            margin-top: 3rem;
+        }
+
+        .section {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+        }
+        .section:first-child {
+            margin-top: 40px;
+        }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px; 
+            height: calc(100% + 20px);
+            background-color: #ccc; 
+            transform: translateX(-50%); 
+            z-index: -1; 
+        }
+        h6, h5 {
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        p {
+            color: #666;
+        }
+        .resp_section{
+            margin-left: 10rem;
+            width: 50%;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <?php
-        
 
-        if (isset($_GET['id'])) {
-            $id_post = $_GET['id'];
-            $func->post_display($id_post);
-        }
-        ?>
+        <div class="container">
+            <?php
 
 
+            if (isset($_GET['id'])) {
+                $id_post = $_GET['id'];
+                $func->post_display($id_post);
+            }
+            ?>
+        </div>
+    
+
+    <div>
         <?php
         $func = new resultados();
         if (isset($_GET['id']) && isset($_SESSION['login'])) {
@@ -177,167 +241,199 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $func->post_resp($id_post, $id_user);
         }
         ?>
+    </div>
 
-        <div class="resp">
+    <div class="resp">
 
-            <div class="container_area_texto">
+        <div class="container_area_texto">
 
-                <form action="#" method="POST" id="respForm" class="area_texto ">
-                    <label for="resp">Resposta</label>
-                    <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
-                    <br>
-                    <button type="submit" class="btn btn-info">Enviar Resposta</button>
-                </form>
-
-
+            <form action="#" method="POST" id="respForm" class="area_texto ">
+                <label for="resp">Resposta</label>
+                <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
                 <br>
+                <button type="submit" class="btn btn-info">Enviar Resposta</button>
+            </form>
 
-
-            </div>
 
             <br>
 
 
-            
         </div>
 
-        <script>
-            tinymce.init({
-                selector: 'textarea#id_teste',
-                height: 300,
-                menubar: 'insert edit view',
-                plugins: 'autolink charmap codesample',
-                toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
-                tinycomments_mode: 'embedded',
-                tinycomments_author: 'Author name',
-                mergetags_list: [
-                    { value: 'First.Name', title: 'First Name' },
-                    { value: 'Email', title: 'Email' },
-                ],
-                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-            });
+        <br>
 
-            tinymce.init({
-                selector: 'textarea#Comentario_resps',
-                height: 200,
-                plugins: 'autolink charmap codesample searchreplace',
-                toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
-                tinycomments_mode: 'embedded',
-                tinycomments_author: 'Author name',
-                mergetags_list: [
-                    { value: 'First.Name', title: 'First Name' },
-                    { value: 'Email', title: 'Email' },
-                ],
-                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-            });
-        </script>
 
-        <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js">
-            document.addEventListener('DOMContentLoaded', function () {
-                Prism.highlightAll();
-            });
-        </script>
 
-        <script>
-            const incrementBtn = document.getElementById('incrementBtn');
-            const decrementBtn = document.getElementById('decrementBtn');
+    </div>
 
-            
-            function incrementCounter() {
-                const idPost = new URLSearchParams(window.location.search).get('id');
-                console.log('ID do Post:', idPost); 
+    <script>
+        tinymce.init({
+            selector: 'textarea#id_teste',
+            height: 300,
+            menubar: 'insert edit view',
+            plugins: 'autolink charmap codesample',
+            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
 
-                if (idPost) {
-                    fetch('increment.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded', 
-                        },
-                        body: 'id=' + encodeURIComponent(idPost) 
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Resposta do servidor:', data); 
-                            if (data.status === 'success') {
-                                alert('Valor incrementado com sucesso!');
-                            } else {
-                                alert('Erro ao incrementar valor: ' + data.message);
-                            }
-                        })
-                        .catch(error => console.error('Erro:', error));
-                } else {
-                    console.error('ID do Post não encontrado na URL');
-                }
-            }
+        tinymce.init({
+            selector: 'textarea#Comentario_resps',
+            height: 200,
+            plugins: 'autolink charmap codesample searchreplace',
+            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
+    </script>
 
-            
-            incrementBtn.addEventListener('click', incrementCounter);
-        </script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js">
+        document.addEventListener('DOMContentLoaded', function () {
+            Prism.highlightAll();
+        });
+    </script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const cancelButton = document.getElementById('cancelButton');
-                const confirmationMessage = document.getElementById('confirmationMessage');
-                const confirmCancelButton = document.getElementById('confirmCancelButton');
-                const dismissMessageButton = document.getElementById('dismissMessageButton');
+    <script>
+        const incrementBtn = document.getElementById('incrementBtn');
+        const decrementBtn = document.getElementById('decrementBtn');
 
-                cancelButton.addEventListener('click', function () {
-                    confirmationMessage.classList.remove('escondido');
-                });
 
-                confirmCancelButton.addEventListener('click', function () {
-                    
-                    confirmationMessage.classList.add('escondido');
-                    console.log('Cancelled');
-                });
+        function incrementCounter() {
+            const idPost = new URLSearchParams(window.location.search).get('id');
+            console.log('ID do Post:', idPost);
 
-                dismissMessageButton.addEventListener('click', function () {
-                    confirmationMessage.classList.add('escondido');
-                });
-
-                const reportButtons = document.querySelectorAll('.reportButton');
-                const reportModals = document.querySelectorAll('.reportModal');
-                const otherCheckboxes = document.querySelectorAll('.otherCheckbox');
-                const otherReasonInputs = document.querySelectorAll('.otherReasonInput');
-                const cancelReportButtons = document.querySelectorAll('.cancelReportButton');
-
-                reportButtons.forEach((button, index) => {
-                    button.addEventListener('click', function () {
-                        reportModals[index].classList.remove('escondido');
-                    });
-
-                    otherCheckboxes[index].addEventListener('change', function () {
-                        if (otherCheckboxes[index].checked) {
-                            otherReasonInputs[index].style.display = 'block';
+            if (idPost) {
+                fetch('increment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'id=' + encodeURIComponent(idPost)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Resposta do servidor:', data);
+                        if (data.status === 'success') {
+                            alert('Valor incrementado com sucesso!');
                         } else {
-                            otherReasonInputs[index].style.display = 'none';
+                            alert('Erro ao incrementar valor: ' + data.message);
                         }
-                    });
+                    })
+                    .catch(error => console.error('Erro:', error));
+            } else {
+                console.error('ID do Post não encontrado na URL');
+            }
+        }
 
-                    cancelReportButtons[index].addEventListener('click', function () {
-                        reportModals[index].classList.add('escondido');
-                    });
+
+        incrementBtn.addEventListener('click', incrementCounter);
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cancelButton = document.getElementById('cancelButton');
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            const confirmCancelButton = document.getElementById('confirmCancelButton');
+            const dismissMessageButton = document.getElementById('dismissMessageButton');
+
+            cancelButton.addEventListener('click', function () {
+                confirmationMessage.classList.remove('escondido');
+            });
+
+            confirmCancelButton.addEventListener('click', function () {
+
+                confirmationMessage.classList.add('escondido');
+                console.log('Cancelled');
+            });
+
+            dismissMessageButton.addEventListener('click', function () {
+                confirmationMessage.classList.add('escondido');
+            });
+
+            const reportButtons = document.querySelectorAll('.reportButton');
+            const reportModals = document.querySelectorAll('.reportModal');
+            const otherCheckboxes = document.querySelectorAll('.otherCheckbox');
+            const otherReasonInputs = document.querySelectorAll('.otherReasonInput');
+            const cancelReportButtons = document.querySelectorAll('.cancelReportButton');
+
+            reportButtons.forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    reportModals[index].classList.remove('escondido');
+                });
+
+                otherCheckboxes[index].addEventListener('change', function () {
+                    if (otherCheckboxes[index].checked) {
+                        otherReasonInputs[index].style.display = 'block';
+                    } else {
+                        otherReasonInputs[index].style.display = 'none';
+                    }
+                });
+
+                cancelReportButtons[index].addEventListener('click', function () {
+                    reportModals[index].classList.add('escondido');
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const reportButtons = document.querySelectorAll('.reportButton');
+            const cancelReportButtons = document.querySelectorAll('.cancelReportButton');
+
+            reportButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const postId = button.nextElementSibling.id.split('_')[1];
+                    document.getElementById(`reportModal_${postId}`).classList.remove('escondido');
                 });
             });
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const reportButtons = document.querySelectorAll('.reportButton');
-                const cancelReportButtons = document.querySelectorAll('.cancelReportButton');
-
-                reportButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        const postId = button.nextElementSibling.id.split('_')[1];
-                        document.getElementById(`reportModal_${postId}`).classList.remove('escondido');
-                    });
-                });
-
-                cancelReportButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        button.closest('.reportModal').classList.add('escondido');
-                    });
+            cancelReportButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    button.closest('.reportModal').classList.add('escondido');
                 });
             });
-        </script>
+        });
+    </script>
+
+
+    <script>
+        // Função para excluir o comentário via AJAX
+        function excluirComentario(comentarioId) {
+            $.ajax({
+                type: "POST",
+                url: "excluir_comentario.php", // Altere o nome do arquivo PHP conforme necessário
+                data: { comentarioId: comentarioId },
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        // Exibir a mensagem de sucesso
+                        alert(response.message); // Você pode usar um modal ou outra forma de exibição
+                        // Aqui você pode atualizar a interface conforme necessário
+                    } else {
+                        // Exibir mensagem de erro, se necessário
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Lidar com erros de requisição AJAX, se necessário
+                    console.error("Erro na requisição AJAX: " + error);
+                }
+            });
+        }
+
+        // Exemplo de uso da função
+        // Chame essa função com o ID do comentário que você deseja excluir
+
+    </script>
 
 </body>
 

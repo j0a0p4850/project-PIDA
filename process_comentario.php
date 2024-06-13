@@ -12,11 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $func->inserir_comentarios($comment_body, $id_user, $resp_id);
     }
     else{
-        echo 'Erro para pegar alguma coisa ai';
+        header('login.php');
     }
-
-
-
 }
 else{
     echo 'Nao está passando o post';

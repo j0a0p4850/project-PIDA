@@ -236,70 +236,83 @@ class resultados
 
 
                 echo '<div class="post">
-                <div>
-                <a href="perfil_usuario_alt.php?id=' . $linha['user_id'] . '" target="_blank"><h2>' . $linha['user_name'] . '</h2></a>
-                    <header class="cabeca_post">
-                    <div id="counter">' . $linha['avaliacao_post'] . '</div>
-                    <button class="reportButton">Denunciar</button>
-                    
+                
 
-                    <div id="reportModal_' . $linha['id_pergunta'] . '" class="reportModal escondido">
-                        <div class="modal-content">
-                            <h2>Report Post</h2>
+
+                  
+    <div>
+        <a href="perfil_usuario_alt.php?id=' . $linha['user_id'] . '" target="_blank">
+            <h4>' . $linha['user_name'] . '</h4>
+        </a>
+        <header class="cabeca_post">
+            <div id="counter">' . $linha['avaliacao_post'] . '</div>
+            <p class="d-inline-flex gap-1">
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample_' . $linha['id_pergunta'] . '" role="button" aria-expanded="false" aria-controls="multiCollapseExample_' . $linha['id_pergunta'] . '">Denunciar post</a>
+            </p>
+            <div class="collapse multi-collapse" id="multiCollapseExample_' . $linha['id_pergunta'] . '">
+                <div class="card card-body">
+                    <button class="btn btn-danger reportButton" data-bs-toggle="modal" data-bs-target="#reportModal_' . $linha['id_pergunta'] . '">Denunciar</button>
+                </div>
+            </div>
+            <div id="reportModal_' . $linha['id_pergunta'] . '" class="modal fade">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Report Post</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
                             <p>Select the reason for reporting this post:</p>
                             <form action="process_report.php" id="reportForm_' . $linha['id_pergunta'] . '" method="POST">
                                 <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
                                 <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
                                 <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
                                 <label><input type="checkbox" name="reason[]" value="Other" class="otherCheckbox"> Other</label><br>
-                                <input type="text" class="otherReasonInput" name="otherReason" placeholder="Please describe the reason">
+                                <input type="text" class="otherReasonInput form-control mt-2" name="otherReason" placeholder="Please describe the reason">
 
                                 <input type="hidden" name="id_pergunta" value="' . $linha['id_pergunta'] . '">
-                                <button type="submit" class="submitReportButton">Submit</button>
-                                <button type="button" class="cancelReportButton">Cancel</button>
+                                <button type="submit" class="btn btn-danger submitReportButton">Submit</button>
+                                <button type="button" class="btn btn-secondary cancelReportButton" data-bs-dismiss="modal">Cancel</button>
                             </form>
                         </div>
                     </div>
-                        <h4>' .
-                    $linha['pergunta_title']
-                    . '
-                        </h4>
-                        <button id="incrementBtn">Curtir</button>
-                        <button id="decrementBtn">Descurtir</button>
-                    </header>
-                    
                 </div>
-                <div class="corpo">
-                    <pre class="">
-                        '
-                    .
-                    $linha['pergunta_descricao']
-                    .
-                    '       
-                    </pre>
+            </div>
+            <h4>' . $linha['pergunta_title'] . '</h4>
+            <button id="incrementBtn">Curtir</button>
+            <button id="decrementBtn">Descurtir</button>
+        </header>
+    </div>
+    <div class="corpo">
+    
+        <pre>' . $linha['pergunta_descricao'] . '</pre>
+        <br>' . $linha['tag_id'] . '
+    </div>
+</div>
+                
                     <br>
                     ' . $linha['tag_id'] . '
                 </div>
                 
-            </div>
+           
             ';
 
                 if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["user_id"]) {
                     if ($linha['status_pergunta'] == 'Aberta') {
-                        echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
+                        echo '<a class="btn btn-danger botoes" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
                         Excluir Postagem
                         </a>
-                        <a class="btn btn-danger" href="fechar_post_process.php?postagem_fech_id=' . ($linha['id_pergunta']) . '">
+                        <a class="btn btn-danger botoes" href="fechar_post_process.php?postagem_fech_id=' . ($linha['id_pergunta']) . '">
                         Fechar Postagem
                         </a>
-                        <a class="btn btn-danger" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
+                        <a class="btn btn-danger botoes" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
                         Editar Postagem
                         </a>';
                     } else {
-                        echo '<a class="btn btn-danger" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
+                        echo '<a class="btn btn-danger botoes" href="excluir_postagem.php?postagem_id=' . ($linha['id_pergunta']) . '">
                         Excluir Postagem
                         </a>
-                        <a class="btn btn-danger" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
+                        <a class="btn btn-danger botoes" href="edit_post.php?postagem_edit_id=' . ($linha['id_pergunta']) . '">
                         Editar Postagem
                         </a>';
                     }
@@ -371,67 +384,145 @@ class resultados
     }
 
     public function post_resp($id_post, $id_user)
-    {
-        $conexao = new conexaoDB();
-        $conecta = $conexao->conectar();
-    
-        $sql = "SELECT p.id_pergunta, 
-       c.id_comentario, 
-       c.comentario_corpo, 
-       c.id_user AS comentario_user_id,
-       r.id_resposta,
-       r.resposta_descricao,
-       r.user_id AS resposta_user_id,
-       u.user_name AS comentario_user_name,
-       u2.user_name AS resposta_user_name
-FROM tb_pergunta p
-JOIN tb_comentarios c ON p.id_pergunta = c.id_pergunta
-JOIN tb_usuario u ON c.id_user = u.id_user
-LEFT JOIN tb_resposta r ON c.id_comentario = r.id_comentario
-LEFT JOIN tb_usuario u2 ON r.user_id = u2.id_user
-WHERE p.id_pergunta = '$id_post';";
-        $resultado = $conecta->query($sql);
-    
-        if ($resultado->num_rows > 0) {
-            while ($linha = $resultado->fetch_assoc()) {
-    
+{
+    $conexao = new conexaoDB();
+    $conecta = $conexao->conectar();
+
+    $sql = "SELECT p.id_pergunta, 
+                   c.id_comentario, 
+                   c.comentario_corpo, 
+                   c.id_user AS comentario_user_id,
+                   r.id_resposta,
+                   r.resposta_descricao,
+                   r.user_id AS resposta_user_id,
+                   u.user_name AS comentario_user_name,
+                   u2.user_name AS resposta_user_name
+            FROM tb_pergunta p
+            JOIN tb_comentarios c ON p.id_pergunta = c.id_pergunta
+            JOIN tb_usuario u ON c.id_user = u.id_user
+            LEFT JOIN tb_resposta r ON c.id_comentario = r.id_comentario
+            LEFT JOIN tb_usuario u2 ON r.user_id = u2.id_user
+            WHERE p.id_pergunta = '$id_post';";
+
+    $resultado = $conecta->query($sql);
+
+    if ($resultado->num_rows > 0) {
+        $comentario_anterior = null; // Variável para controlar o comentário anterior
+        while ($linha = $resultado->fetch_assoc()) {
+            // Exibir apenas o comentário se for diferente do anterior
+            if ($linha['id_comentario'] != $comentario_anterior) {
                 echo '
+                <div class="section">
+        
                 <div class="display_resp">
-                    <h3>' . ($linha['comentario_user_name']) . '</h3>
-                    <button class="reportButton">Denunciar</button> 
-                    <div class="resp">' . ($linha['comentario_corpo']) . '
-                    ';
-                    if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["comentario_user_id"]) {
-                        echo '
-                        <a class="btn btn-danger" href="excluir_processar_comentario.php?comentario_id=' . ($linha['id_comentario']) . '">
-                            Excluir
-                        </a>
-                        <a class="btn btn-danger" href="edit_comentario_pag.php?comentario_edicao_id=' . ($linha['id_comentario']) . '">
-                            Editar
-                        </a>';
-                        
-                    }
-                   echo' <button id="incrementBtn">Curtir</button>
-                <button id="decrementBtn">Descurtir</button>
+                  <a href="perfil_usuario_alt.php?id='.$linha['comentario_user_id'].'">
+                  <h5>'.$linha['comentario_user_name']. '</h5></a>
+                     <p class="d-inline-flex gap-1">
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample_' . $linha['id_comentario'] . 
+                    '" role="button" aria-expanded="false" aria-controls="multiCollapseExample_' . $linha['id_comentario'] . '">Denunciar post</a>
+                </p>
+                <div class="collapse multi-collapse" id="multiCollapseExample_' . $linha['id_comentario'] . '">
+                    <div class="card card-body">
+                        <button class="btn btn-danger reportButton" data-bs-toggle="modal" data-bs-target="#reportModal_' . $linha['id_comentario'] . '">Denunciar</button>
+                    </div>
+                </div>
+                <div id="reportModal_' . $linha['id_comentario'] . '" class="modal fade">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Report Post</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Select the reason for reporting this post:</p>
+                                <form action="process_report.php" id="reportForm_' . $linha['id_comentario'] . '" method="POST">
+                                    <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Other" class="otherCheckbox"> Other</label><br>
+                                    <input type="text" class="otherReasonInput form-control mt-2" name="otherReason" placeholder="Please describe the reason">
+    
+                                    <input type="hidden" name="id_comentario" value="' . $linha['id_comentario'] . '">
+                                    <button type="submit" class="btn btn-danger submitReportButton">Submit</button>
+                                    <button type="button" class="btn btn-secondary cancelReportButton" data-bs-dismiss="modal">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                     
-                    <div class="resp">
-                    <h3>comentario</h3>' . ($linha['resposta_descricao']) . '';
-                    if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["comentario_user_id"]) {
-                        echo '
-                        <a class="btn btn-danger" href="excluir_processar_resp.php?resp_id=' . ($linha['id_resposta']) . '">
-                            Excluir
-                        </a>';
-                    }
-                    
-                   echo '</div>';
-                    
-    
+                    <div class="comentario_resp">' . $linha['comentario_corpo'] . '
+            </div>
+                    ';
+                if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["comentario_user_id"]) {
+                    echo '
+                    <br><br>
+                    <a class="btn btn-danger" href="excluir_processar_comentario.php?comentario_id=' . $linha['id_comentario'] . '">Excluir</a>
+                    <a class="btn btn-danger" href="edit_comentario_pag.php?comentario_edicao_id=' . $linha['id_comentario'] . '">Editar</a>';
+                }
                 
-    
                 echo '
-                
+                    <button id="incrementBtn">Curtir</button>
+                    <button id="decrementBtn">Descurtir</button>
+                    </div>';
     
+                // Marcar o comentário atual como o comentário anterior
+                $comentario_anterior = $linha['id_comentario'];
+            }
+    
+            // Exibir a resposta, se houver
+            if (!empty($linha['resposta_descricao'])) {
+                echo '
+            <div class="section resp_section">
+        
+                <div class="comentario_resp">
+                <a href="perfil_usuario_alt.php?id='. $linha['resposta_user_id'].'">
+                  <h6>' . $linha['resposta_user_name'] . '</h6></a>
+                    
+                     <p class="d-inline-flex gap-1">
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample_' . $linha['id_resposta'] . '" role="button" aria-expanded="false" aria-controls="multiCollapseExample_' . $linha['id_resposta'] . '">Denunciar post</a>
+                </p>
+                <div class="collapse multi-collapse" id="multiCollapseExample_' . $linha['id_resposta'] . '">
+                    <div class="card card-body">
+                        <button class="btn btn-danger reportButton" data-bs-toggle="modal" data-bs-target="#reportModal_' . $linha['id_resposta'] . '">Denunciar</button>
+                    </div>
+                </div>
+                <div id="reportModal_' . $linha['id_resposta'] . '" class="modal fade">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Report Post</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Select the reason for reporting this post:</p>
+                                <form action="process_report.php" id="reportForm_' . $linha['id_resposta'] . '" method="POST">
+                                    <label><input type="checkbox" name="reason[]" value="Spam"> Spam</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Inappropriate Content"> Inappropriate Content</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Harassment"> Harassment</label><br>
+                                    <label><input type="checkbox" name="reason[]" value="Other" class="otherCheckbox"> Other</label><br>
+                                    <input type="text" class="otherReasonInput form-control mt-2" name="otherReason" placeholder="Please describe the reason">
+    
+                                    <input type="hidden" name="id_resposta" value="' . $linha['id_resposta'] . '">
+                                    <button type="submit" class="btn btn-danger submitReportButton">Submit</button>
+                                    <button type="button" class="btn btn-secondary cancelReportButton" data-bs-dismiss="modal">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        ' . $linha['resposta_descricao'] . '';
+                if (isset($_SESSION["login"]) && $_SESSION["login"] == $linha["resposta_user_id"]) {
+                    echo '
+                    <a class="btn btn-danger" href="excluir_processar_resp.php?resp_id=' . $linha['id_resposta'] . '">Excluir</a>
+                    <a class="btn btn-danger" href="edit_resp_pag.php?resp_edicao_id=' . $linha['id_resposta'] . '">Editar</a>';
+                }
+                echo '</div>';
+
+                
+            }
+            echo '
                 <div class="area_comentario" id="commentForm">
                     <form action="process_comentario.php" id="comentForm_'.$linha['id_comentario'].'" class="area_texto" method="POST">
                     <input type="hidden" name="id" value="'.$linha['id_comentario'].'">
@@ -443,16 +534,18 @@ WHERE p.id_pergunta = '$id_post';";
                     </form>
                 </div>
             </div>';
-            }
-        } else {
-            echo " ";
         }
-    
-        $conexao->desconectar();
+    } else {
+        echo " ";
     }
-    
 
-    public function excluirComentario($comentarioId)
+    $conexao->desconectar();
+}
+
+
+
+
+public function excluirComentario($comentarioId)
 {
     $conexao = new conexaoDB();
     $conecta = $conexao->conectar();
@@ -461,7 +554,17 @@ WHERE p.id_pergunta = '$id_post';";
     $conecta->begin_transaction();
 
     try {
-        // Excluir a resposta associada ao comentário, se existir
+        $sqlDeleteResposta = "DELETE FROM tb_denuncias WHERE id_comentario = ?";
+        $stmtDeleteResposta = $conecta->prepare($sqlDeleteResposta);
+        if ($stmtDeleteResposta === false) {
+            throw new Exception('Erro na preparação do statement para excluir resposta: ' . $conecta->error);
+        }
+
+        $stmtDeleteResposta->bind_param("i", $comentarioId);
+        if (!$stmtDeleteResposta->execute()) {
+            throw new Exception('Erro na execução do statement para excluir resposta: ' . $stmtDeleteResposta->error);
+        }
+       
         $sqlDeleteResposta = "DELETE FROM tb_resposta WHERE id_comentario = ?";
         $stmtDeleteResposta = $conecta->prepare($sqlDeleteResposta);
         if ($stmtDeleteResposta === false) {
@@ -473,9 +576,6 @@ WHERE p.id_pergunta = '$id_post';";
             throw new Exception('Erro na execução do statement para excluir resposta: ' . $stmtDeleteResposta->error);
         }
 
-        // Não precisamos verificar $stmtDeleteResposta->affected_rows aqui porque a exclusão pode falhar se não houver resposta associada
-
-        // Excluir o comentário
         $sqlDeleteComentario = "DELETE FROM tb_comentarios WHERE id_comentario = ?";
         $stmtDeleteComentario = $conecta->prepare($sqlDeleteComentario);
         if ($stmtDeleteComentario === false) {
@@ -491,16 +591,20 @@ WHERE p.id_pergunta = '$id_post';";
         if ($stmtDeleteComentario->affected_rows > 0) {
             // Confirmar a transação
             $conecta->commit();
-            echo "Comentário e resposta associados (se houver) excluídos com sucesso.";
+            
+            $response = array("success" => true, "message" => "Comentário e resposta associados (se houver) excluídos com sucesso.");
+            echo json_encode($response);
         } else {
             // Rolback da transação em caso de falha na exclusão do comentário
             $conecta->rollback();
-            echo "Falha ao excluir o comentário.";
+            $response = array("success" => false, "message" => "Falha ao excluir o comentário.");
+            echo json_encode($response);
         }
     } catch (Exception $e) {
         // Em caso de exceção, rolar para trás a transação
         $conecta->rollback();
-        echo "Erro ao excluir o comentário e a resposta: " . $e->getMessage();
+        $response = array("success" => false, "message" => "Erro ao excluir o comentário e a resposta: " . $e->getMessage());
+        echo json_encode($response);
     } finally {
         // Fechar os statements se foram inicializados
         if (isset($stmtDeleteResposta)) {
@@ -516,14 +620,44 @@ WHERE p.id_pergunta = '$id_post';";
 }
 
 
+
     public function excluirResposta($resp_id)
     {
 
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
-        $sql = "DELETE FROM tb_resposta WHERE id_resposta = '$resp_id';";
-        $conecta->query($sql);
+
+        $conecta->begin_transaction();
+
+        try {
+            // Primeiro, remova os registros relacionados na tabela tb_comentarios
+            $sql1 = "DELETE FROM tb_denuncias WHERE id_resposta = ?";
+            $stmt1 = $conecta->prepare($sql1);
+            $stmt1->bind_param("i", $resp_id);
+            $stmt1->execute();
+            $stmt1->close();
+
+            
+            $sql = "DELETE FROM tb_resposta WHERE id_resposta = ?";
+            $stmt2 = $conecta->prepare($sql);
+            $stmt2->bind_param("i", $resp_id);
+            $stmt2->execute();
+            $stmt2->close();
+
+            
+
+            
+            $conecta->commit();
+        } catch (mysqli_sql_exception $exception) {
+            
+            $conecta->rollback();
+            throw $exception;
+        }
+
         $conexao->desconectar();
+        
+        
+        
 
 
     }
@@ -655,33 +789,7 @@ WHERE p.id_pergunta = '$id_post';";
         }
     }
 
-    /* public function editar_post($post_id, $post_title, $pergunta_descricao){
 
-         $conexao = new conexaoDB();
-         $conecta = $conexao->conectar();
-
-         $sql = "UPDATE `tb_usuario` SET ";
-         if (!empty($post_title)) {
-             $sql .= "`pergunta_title` = '$post_title', ";
-         }
-         if (!empty($pergunta_descricao)) {
-             $sql .= "`pergunta_descricao` = '$pergunta_descricao', ";
-         }
-         
-         // Remover a última vírgula
-         $sql = rtrim($sql, ', ');
-
-         $sql .= " WHERE `id_pergunta` = $post_id;";
-
-         // Executar a consulta
-         if (mysqli_query($conecta, $sql)) {
-             echo "Informações do usuário atualizadas com sucesso!";
-         } else {
-             echo "Erro ao atualizar informações do usuário: " . mysqli_error($conecta);
-         }
-
-         $conexao->desconectar();
-     }*/
     public function editar_post($post_id, $post_title, $pergunta_descricao)
     {
         $conexao = new conexaoDB();
@@ -723,29 +831,29 @@ WHERE p.id_pergunta = '$id_post';";
     }
 
     public function editar_comentario($coment_id, $comentario_corpo)
-{
-    $conexao = new conexaoDB();
-    $conecta = $conexao->conectar();
+    {
+        $conexao = new conexaoDB();
+        $conecta = $conexao->conectar();
 
-    $sql = "UPDATE `tb_comentarios` SET `comentario_corpo` = ? WHERE `id_comentario` = ?";
-    
-    $stmt = $conecta->prepare($sql);
-    if (!$stmt) {
-        echo "Erro ao preparar a consulta: " . $conecta->error;
-        return;
+        $sql = "UPDATE `tb_comentarios` SET `comentario_corpo` = ? WHERE `id_comentario` = ?";
+
+        $stmt = $conecta->prepare($sql);
+        if (!$stmt) {
+            echo "Erro ao preparar a consulta: " . $conecta->error;
+            return;
+        }
+
+        $stmt->bind_param('si', $comentario_corpo, $coment_id);
+
+        if ($stmt->execute()) {
+            echo "Informações do comentário atualizadas com sucesso!";
+        } else {
+            echo "Erro ao atualizar informações do comentário: " . $stmt->error;
+        }
+
+        $stmt->close();
+        $conexao->desconectar();
     }
-
-    $stmt->bind_param('si', $comentario_corpo, $coment_id);
-
-    if ($stmt->execute()) {
-        echo "Informações do comentário atualizadas com sucesso!";
-    } else {
-        echo "Erro ao atualizar informações do comentário: " . $stmt->error;
-    }
-
-    $stmt->close();
-    $conexao->desconectar();
-}
 
 
 

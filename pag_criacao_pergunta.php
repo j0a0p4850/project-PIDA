@@ -1,3 +1,9 @@
+
+<?php
+session_start();
+include 'funcoes_result.php';
+$func = new resultados();
+?>
 <!DOCTYPE html>
 <html>
 
@@ -41,6 +47,38 @@
 </head>
 
 <body>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.php">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="Pag_tags.php" class="nav-link">Tags</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </nav>
+        <br>
+        <br>
+        
+
     <form action="" method="POST" enctype="multipart/form-data">
         <div class="container">
             <div class="header">
@@ -75,10 +113,7 @@
 
                         <div class="modal-body">
                             <?php
-                            session_start();
-                            include 'funcoes_result.php';
-                            $func = new resultados();
-                            $func->show_tags();
+                                $func->show_tags();
                             ?>
                         </div>
                         <div class="modal-footer">
@@ -93,10 +128,7 @@
 
             </div>
             <div class="tag-selection">
-                <h2>Tags Selecionadas</h2>
-                <span class="badge text-bg-primary rounded-pill">
-                    <div id="selectedTags"> </div>
-                </span>
+                
                 <input type="hidden" name="selected_tags" id="selectedTagsInput">
                 <div class="footer">
                     <button type="submit" class="btn btn-success">Salvar Publicação</button>
@@ -113,7 +145,7 @@
     <?php
 
 
-    $func = new resultados();
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_SESSION['login'])) {
             $user_id = $_SESSION['login'];
@@ -122,10 +154,10 @@
             $selected_tags = $_POST['selected_tags']; // Recupera as tags selecionadas
             $tag_ids = explode(",", $selected_tags); // Separa as tags em um array
             $func->publication($post_title, $post_body, $tag_ids, $user_id);
-            echo "Postagem enviada com sucesso.";
+            header('pagina_de_resultados.php');
         }
     } else {
-        echo "Desculpe, houve um erro ao enviar a postagem.";
+        echo " ";
     }
 
 

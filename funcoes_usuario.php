@@ -281,6 +281,8 @@ class funcoes
 
                 echo '<br>
                 <a href="edicao_dados_perfil.php"><button type="button" class="btn btn-primary btn-sm">Editar Informações</button></a>
+                <br>
+                <br>
                 <div class="resumo">
                         <h3>Resumo</h3>
                         <p>' . $linha['descricao_user'] . '</p>
@@ -340,7 +342,7 @@ class funcoes
         $conexao->desconectar();
     }
 
-    public function teste($id_usuario)
+    public function display_questoes_usuario($id_usuario)
     {
 
 
