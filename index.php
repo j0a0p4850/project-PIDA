@@ -125,7 +125,24 @@
             width: 100%;
             padding: 10px;
             font-size: 16px;
-            border-radius: 7px;
+            border: 1px solid #ddd;
+            border-radius: 7px 0 0 7px;
+        }
+
+        .search-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 7px 7px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-left: none;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
         }
 
         .suggestions-container {
@@ -137,6 +154,7 @@
             border: 1px solid #ddd;
             z-index: 10;
             color: #000;
+            width: 100%;
         }
 
         .suggestion-item {
@@ -177,23 +195,19 @@
                 </ul>
                 <!-- Container para o formulário de pesquisa -->
                 <div class="search-container">
-                    <form>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
-                            oninput="buscarSugestoes(this.value)">
-                        <div class="suggestions-container" id="suggestions"></div>
-                        <button type="button"
-                            onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
-                    </form>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                        oninput="buscarSugestoes(this.value)">
+                    <button type="button" class="search-button"
+                        onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                    <div class="suggestions-container" id="suggestions"></div>
                 </div>
             </div>
         </div>
     </nav>
 
-   
-
     <!-- Informações sobre a TechQA -->
     <main>
-    <div class="container">
+        <div class="container">
             <h1>Sobre a TechQA</h1>
         </div>
         <div class="container">
@@ -235,7 +249,6 @@
                     </div>
                 </div>
                 <div class="col">
-                   
                     <form>
                         <input type="email" placeholder="Digite seu e-mail">
                         <button type="submit">Novas informações</button>
@@ -251,7 +264,6 @@
         crossorigin="anonymous"></script>
 
     <script>
-
         function buscarSugestoes(inputVal) {
             if (inputVal.length > 0) {
                 fetch('livesearch.php', {

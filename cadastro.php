@@ -161,6 +161,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit">Cadastrar</button>
         </form>
 
+        <?php
+
+        echo $func->getMessage();
+
+        ?>
+
 
     </div>
 

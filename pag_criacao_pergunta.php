@@ -3,6 +3,20 @@
 session_start();
 include 'funcoes_result.php';
 $func = new resultados();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_SESSION['login'])) {
+        $user_id = $_SESSION['login'];
+        $post_title = $_POST['post_title'];
+        $post_body = $_POST['post_body'];
+        $selected_tags = $_POST['selected_tags']; // Recupera as tags selecionadas
+        $tag_ids = explode(",", $selected_tags); // Separa as tags em um array
+        $func->publication($post_title, $post_body, $tag_ids, $user_id);
+        header('pagina_de_resultados.php');
+    }
+} else {
+    echo " ";
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -142,26 +156,7 @@ $func = new resultados();
 
 
 
-    <?php
 
-
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_SESSION['login'])) {
-            $user_id = $_SESSION['login'];
-            $post_title = $_POST['post_title'];
-            $post_body = $_POST['post_body'];
-            $selected_tags = $_POST['selected_tags']; // Recupera as tags selecionadas
-            $tag_ids = explode(",", $selected_tags); // Separa as tags em um array
-            $func->publication($post_title, $post_body, $tag_ids, $user_id);
-            header('pagina_de_resultados.php');
-        }
-    } else {
-        echo " ";
-    }
-
-
-    ?>
 
     <script>
         tinymce.init({

@@ -112,8 +112,21 @@ if (!isset($_SESSION['login'])) {
 
                     ?>
                 </div>
-                <a href="pag_criacao_pergunta.php"><button type="button">Criar pergunta</button></a>
-                <a href="logout.php"><button type="button">Logout</button></a>
+                <?php
+                if (isset($_GET['id'])) {
+                    $id_do_usuario = $_GET['id'];
+                    if(isset($_SESSION['login'])){
+                        if( $_SESSION['login'] == $id_do_usuario){
+                            echo '<a href="pag_criacao_pergunta.php"><button type="button">Criar pergunta</button></a>
+                                  <a href="logout.php"><button type="button">Logout</button></a>';
+                        }
+                        else{
+
+                        }
+                    }
+                }
+                ?>
+                
             </div>
         </div>
     </div>

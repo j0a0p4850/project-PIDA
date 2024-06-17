@@ -19,7 +19,7 @@ class search
                     JOIN tb_tags t ON pt.tag_id = t.id_tags 
                     WHERE p.pergunta_title LIKE '%$termo%'
                     GROUP BY p.id_pergunta";
-            
+
             $resultado = $conecta->query($sql);
             if ($resultado->num_rows > 0) {
                 while ($linha = $resultado->fetch_assoc()) {
@@ -73,8 +73,11 @@ class search
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
@@ -87,40 +90,48 @@ class search
             margin: 0;
             padding: 0;
         }
+
         header {
             background-color: #f8f9fa;
             color: #fff;
             padding: 10px;
             text-align: center;
         }
+
         nav {
             background-color: #444;
             color: #fff;
             padding: 10px;
             text-align: center;
         }
+
         nav ul {
             list-style: none;
             padding: 0;
         }
+
         nav ul li {
             display: inline-block;
             margin-right: 20px;
         }
+
         main {
             padding: 20px;
         }
+
         .search-container {
             position: relative;
             width: 300px;
             display: flex;
         }
+
         .search-input {
             width: 100%;
             padding: 10px;
             font-size: 16px;
             border-radius: 7px;
         }
+
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -131,42 +142,52 @@ class search
             z-index: 10;
             color: #000;
         }
+
         .suggestion-item {
             padding: 10px;
             cursor: pointer;
         }
+
         .suggestion-item:hover {
             background-color: #f0f0f0;
         }
+
         .question {
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             padding: 10px;
             margin-bottom: 10px;
         }
+
         .question h2 {
             font-size: 18px;
             margin: 0;
         }
+
         .question p {
             font-size: 14px;
             margin: 0;
         }
+
         .c1 {
             float: left;
             margin-top: 30px;
             margin-left: 20px;
         }
+
         main {
             margin-left: 300px;
         }
+
         aside {
             background-color: #eee;
             padding: 10px;
         }
+
         .share {
             border: 2px solid black;
         }
+
         .filter_data {
             display: block;
             flex-wrap: wrap;
@@ -180,7 +201,9 @@ class search
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="index.php">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -199,9 +222,13 @@ class search
                         </li>
                     </ul>
                     <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Pesquisar..." oninput="buscarSugestoes(this.value)">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                        <div class="suggestions-container" id="suggestions"></div>
+                        <form>
+                            <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                                oninput="buscarSugestoes(this.value)">
+                            <div class="suggestions-container" id="suggestions"></div>
+                            <button type="button"
+                                onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -222,10 +249,10 @@ class search
                     </div>
                 </li>
                 <?php
-                
+
                 $func = new resultados();
                 $func->show_tags();
-                   
+
                 ?>
                 <li class="list-group-item">
                     <h4>Data</h4>
@@ -248,7 +275,7 @@ class search
         $func_s->search();
 
         ?>
-       <!-- <div class="col-md-9">
+        <!-- <div class="col-md-9">
             <div class="filter_data">
                 
             </div>
@@ -279,6 +306,7 @@ class search
     </script>
 
     <script>
+
         function buscarSugestoes(inputVal) {
             if (inputVal.length > 0) {
                 fetch('livesearch.php', {
@@ -306,6 +334,13 @@ class search
                     .catch(error => console.error('Error:', error));
             } else {
                 document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+        // Função para realizar a pesquisa
+        function realizarPesquisa(inputVal) {
+            if (inputVal.length > 0) {
+                window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);
             }
         }
     </script>
@@ -349,5 +384,5 @@ class search
         });
     </script>
 </body>
-</html>
 
+</html>

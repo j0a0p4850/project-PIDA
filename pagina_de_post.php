@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
+
 }
 
 
@@ -105,6 +106,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         }
+        .coment_bnt{
+            margin-top: 13px;
+        }
+        
+        .area_comentario_texto{
+            margin-left: 10rem;
+            margin-top: 20px;
+            
+        }
+        .tox{
+            width: 700px;
+            
+        }
 
         .resp {
             margin-top: 10px;
@@ -172,10 +186,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .comentario_resp {
             display: contents;
         }
-        .botoes{
+
+        .botoes {
             margin-left: 16rem;
         }
-        .corpo{
+
+        .corpo {
             margin-top: 3rem;
         }
 
@@ -188,29 +204,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 5px;
             position: relative;
         }
+
         .section:first-child {
             margin-top: 40px;
         }
+
         .section::before {
             content: '';
             position: absolute;
             top: -20px;
             left: 50%;
-            width: 2px; 
+            width: 2px;
             height: calc(100% + 20px);
-            background-color: #ccc; 
-            transform: translateX(-50%); 
-            z-index: -1; 
+            background-color: #ccc;
+            transform: translateX(-50%);
+            z-index: -1;
         }
-        h6, h5 {
+
+        h6,
+        h5 {
             color: #333;
             border-bottom: 2px solid #ccc;
             padding-bottom: 5px;
         }
+
         p {
             color: #666;
         }
-        .resp_section{
+
+        .resp_section {
             margin-left: 10rem;
             width: 50%;
         }
@@ -219,18 +241,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
+<header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.php">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="Pag_tags.php" class="nav-link">Tags</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                        </li>
+                    </ul>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                            oninput="buscarSugestoes(this.value)">
+                        <button type="button" class="search-button"
+                            onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                        <div class="suggestions-container" id="suggestions"></div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-        <div class="container">
-            <?php
+
+    <div class="container">
+        <?php
 
 
-            if (isset($_GET['id'])) {
-                $id_post = $_GET['id'];
-                $func->post_display($id_post);
-            }
-            ?>
-        </div>
-    
+        if (isset($_GET['id'])) {
+            $id_post = $_GET['id'];
+            $func->post_display($id_post);
+        }
+        ?>
+    </div>
+
 
     <div>
         <?php
@@ -243,28 +301,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ?>
     </div>
 
-    <div class="resp">
-
-        <div class="container_area_texto">
-
-            <form action="#" method="POST" id="respForm" class="area_texto ">
-                <label for="resp">Resposta</label>
-                <textarea placeholder="Escreva Sua resposta aqui" id="id_teste" name="resp_body"></textarea>
-                <br>
-                <button type="submit" class="btn btn-info">Enviar Resposta</button>
-            </form>
 
 
-            <br>
-
-
-        </div>
-
-        <br>
-
-
-
-    </div>
+   
 
     <script>
         tinymce.init({
@@ -283,7 +322,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
 
         tinymce.init({
-            selector: 'textarea#Comentario_resps',
+            selector: 'textarea.Comentario_resps',
             height: 200,
             plugins: 'autolink charmap codesample searchreplace',
             toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
@@ -434,6 +473,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Chame essa função com o ID do comentário que você deseja excluir
 
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.delete-post').click(function () {
+                var postId = $(this).data('post-id');
+                $.ajax({
+                    url: 'excluir_post.php',
+                    type: 'GET',
+                    data: { postagem_id: postId },
+                    success: function (response) {
+                        var jsonResponse = JSON.parse(response);
+                        if (jsonResponse.status === 'success') {
+                            alert(jsonResponse.message);
+                            location.reload(); // Atualiza a página
+                        } else {
+                            alert(jsonResponse.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Erro ao excluir o post.');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Adicione antes do fechamento do </body> para incluir o JavaScript -->
+<script>
+    // Função para exibir ou ocultar a textarea de comentário
+    function toggleCommentForm(comentarioId) {
+        var commentForm = document.getElementById('commentForm_' + comentarioId);
+        if (commentForm.style.display === 'none') {
+            commentForm.style.display = 'block';
+        } else {
+            commentForm.style.display = 'none';
+        }
+    }
+
+    // Função para exibir modal de confirmação ao excluir um comentário ou resposta
+    function confirmDelete(id) {
+        if (confirm('Tem certeza que deseja excluir este comentário/resposta?')) {
+            window.location.href = 'excluir_processar_comentario.php?comentario_id=' + id;
+        }
+    }
+</script>
+
 
 </body>
 

@@ -12,6 +12,21 @@ class funcoes
 {
 
 
+    private $message;
+
+    public function __construct() {
+        $this->message = "";
+    }
+
+    public function getMessage() {
+        return $this->message;
+    }
+
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+
+
     public function registro($first_name, $last_name, $username, $email, $hashedPassword)
     {
         $conexao = new conexaoDB();
@@ -73,13 +88,13 @@ class funcoes
                 $mail->AltBody = "Clique no link para poder confirmar o email e ter acesso a conta http://localhost:3000/login.php";
 
                 $mail->send();
-                echo "Confirme a sua conta pelo email para poder acessa-la";
+                $this->setMessage("Confirme a sua conta pelo email para poder acessa-la");
 
             } else {
-                echo "Erro no cadastro: " . $stmt->error;
+                $this->setMessage( "Erro no cadastro: " . $stmt->error);
             }
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $this->setMessage("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
         }
 
         $stmt->close();
@@ -94,7 +109,7 @@ class funcoes
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
 
-        // Verifica se o email está registrado
+        
         $checkEmailQuery = "SELECT * FROM tb_usuario WHERE user_email = ?";
         $stmtCheckEmail = $conecta->prepare($checkEmailQuery);
         $stmtCheckEmail->bind_param("s", $email);
@@ -124,13 +139,13 @@ class funcoes
                 $mail->AltBody = "Clique no link para poder redefinir sua senha http://localhost:3000/esqueci_senha.php";
 
                 $mail->send();
-                echo "Um email foi enviado para o endereço fornecido para redefinir sua senha.";
+                $this->setMessage( "Um email foi enviado para o endereço fornecido para redefinir sua senha.");
             } catch (Exception $e) {
-                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                $this->setMessage("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
             }
         } else {
             // Email não está registrado
-            echo "Erro: Este email não está registrado.";
+            $this->setMessage("Erro: Este email não está registrado.");
         }
 
         $stmtCheckEmail->close();
@@ -235,14 +250,14 @@ class funcoes
                 $stmt->close();
                 $conecta->close();
 
-                echo "E-mail ou senha incorretos.";
+                $this->setMessage("E-mail ou senha incorretos."); ;
                 return false;
             }
         } else {
             $stmt->close();
             $conecta->close();
 
-            echo "E-mail ou senha incorretos.";
+            $this->setMessage("E-mail ou senha incorretos."); ;
             return false;
         }
     }

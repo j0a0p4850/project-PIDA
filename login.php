@@ -1,20 +1,18 @@
 <?php
 session_start();
 include 'funcoes_usuario.php';
-
+$func = new funcoes();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $func = new funcoes();
+    
     $id_usuario = $func->logar($email, $password);
 
     if ($id_usuario) {
         $_SESSION['login'] = $id_usuario;
         header('Location: perfil_usuario.php');
         exit();
-    } else {
-        echo 'Usuário ou senha inválidos';
-    }
+    } 
 }
 ?>
 
@@ -150,7 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
         <?php
 
-
+        echo $func->getMessage()
 
         ?>
 
