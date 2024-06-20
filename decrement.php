@@ -10,12 +10,12 @@ if (isset($_SESSION['login']) && isset($_POST['id'])) {
     $func = new resultados();
 
     try {
-        $result = $func->incrementLikeValue($id_post, $id_user);
+        $result = $func->incrementDislikeValue($id_post, $id_user); 
 
         if ($result) {
             echo json_encode(['status' => 'success']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to increment value']);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to decrement value']);
         }
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

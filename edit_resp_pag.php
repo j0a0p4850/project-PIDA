@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,6 +62,9 @@
             font-size: 12px;
             margin-top: 4px;
         }
+        .ql-container.ql-snow{
+            height: 10rem;
+        }
         
     </style>
 </head>
@@ -66,19 +72,21 @@
 <body>
 
     <div class="container">
-        <form id="editarComentarioForm" method="POST"
-            action="editar_processar_comentario.php?comentario_edicao_id=<?php echo $_GET['comentario_edicao_id']; ?>">
-            <label for="comentario_body">Descrição do Comentário:</label>
-            <textarea name="comentario_body" id="comentario_body" rows="4"
-                placeholder="Digite o novo conteúdo do comentário"></textarea>
+        <form id="editarRespostaForm" method="POST"
+            action="process_edicao_resp.php?resp_edicao_id=<?php echo $_GET['resp_edicao_id']; ?>" onsubmit="prepareSubmissionEditResp()">
+            <label for="resp_body">Descrição do Comentário:</label>
+            <div id="edicao-comentario"></div>
+                <input type="hidden" name="resp_body" id="resp_body" rows="4" placeholder="Digite o novo conteúdo do comentário">
             <div class="error-message" id="errorSummary"></div>
             <button type="submit" id="submitButton">Modificar</button>
         </form>
+        
+                                    
     </div>
 
 
     <script>
-        var quill = new Quill('#editor-container', {
+        var quill = new Quill('#edicao-comentario', {
             theme: 'snow',
             modules: {
                 toolbar: [
@@ -93,14 +101,14 @@
             }
         });
 
-        function prepareSubmission() {
-            var postBody = document.querySelector('input[name=post_body]');
+        function prepareSubmissionEditResp() {
+            var postBody = document.querySelector('input[name=resp_body]');
             postBody.value = quill.root.innerHTML;
         }
     </script>
 
     <script>
-        const form = document.getElementById('editarComentarioForm');
+        const form = document.getElementById('editarRespostaForm');
         const submitButton = document.getElementById('submitButton');
         const errorSummary = document.getElementById('errorSummary');
 
@@ -119,7 +127,7 @@
         });
 
         function validateForm() {
-            const comentarioBody = document.getElementById('comentario_body').value.trim();
+            const comentarioBody = document.getElementById('resp_body').value.trim();
             return comentarioBody.length > 0;
         }
 

@@ -87,52 +87,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button:hover {
             background-color: #0056b3;
         }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative; /* Add position relative */
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 7px 0 0 7px; /* Rounded corners for the left side */
+        }
+
+        .search-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 7px 7px 0; /* Rounded corners for the right side */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-left: none; /* Remove the left border to make it seamless */
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            z-index: 10;
+            color: #000;
+            width: 100%; /* Make suggestions container same width as search container */
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.php">Navbar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                        </li>
+                        <?php
+                            if(isset($_SESSION['login'])){
+                                echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                                </li>';
+                            }
+                            else{
+                                echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="cadastro.php">Entrar</a>
+                                </li>';
+                            }
+                        ?>
+                        <li class="nav-item">
+                            <a href="Pag_tags.php" class="nav-link">Tags</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                        </li>
+                    </ul>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                            oninput="buscarSugestoes(this.value)">
+                        <button type="button" class="search-button"
+                            onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                        <div class="suggestions-container" id="suggestions"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
 
     <div class="container">
@@ -160,7 +217,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit">Cadastrar</button>
         </form>
-
+        <br>
+        <br>
+            <h6>Já conta? <a href="login.php">Clique aqui</a></h6>
+        
         <?php
 
         echo $func->getMessage();
@@ -225,6 +285,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
         });
     </script>
+
+<script>
+
+function buscarSugestoes(inputVal) {
+    if (inputVal.length > 0) {
+        fetch('livesearch.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'input=' + encodeURIComponent(inputVal)
+        })
+            .then(response => response.json())
+            .then(data => {
+                const suggestionsContainer = document.getElementById('suggestions');
+                suggestionsContainer.innerHTML = '';
+                data.forEach(sugestao => {
+                    const div = document.createElement('div');
+                    div.textContent = sugestao;
+                    div.classList.add('suggestion-item');
+                    div.onclick = function () {
+                        document.querySelector('.search-input').value = this.textContent;
+                        suggestionsContainer.innerHTML = '';
+                    };
+                    suggestionsContainer.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        document.getElementById('suggestions').innerHTML = '';
+    }
+}
+
+// Função para realizar a pesquisa
+function realizarPesquisa(inputVal) {
+    if (inputVal.length > 0) {
+        window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);
+    }
+}
+</script>
 </body>
 
 </html>

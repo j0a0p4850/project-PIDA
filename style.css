@@ -66,3 +66,26 @@
   display: none;
 }
 
+.container-type{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-type{
+  font-size: 25px;
+
+}
+.auto-type{
+  color: blue;
+}
+
+.init{
+  background-color: rgb(32, 29, 29);
+  width: 100%;
+ 
+}
+  
+

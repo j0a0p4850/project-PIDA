@@ -364,7 +364,8 @@ class funcoes
         $conexao = new conexaoDB();
         $conecta = $conexao->conectar();
         // Inserir registro
-        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, p.avaliacao_post, p.user_id,
+        $sql = "SELECT p.id_pergunta, p.pergunta_title, p.pergunta_descricao, p.status_pergunta, p.avaliacao_like, p.avaliacao_dislike, 
+        p.user_id,
         p.data_publicacao, p.data_fechamento, p.status_pergunta, GROUP_CONCAT(t.tag_name) AS tags_associadas
         FROM tb_pergunta p
         JOIN tb_pergunta_tags pt ON p.id_pergunta = pt.pergunta_id
@@ -387,7 +388,8 @@ class funcoes
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill"> Likes: ' . $linha['avaliacao_post'] . '</span>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: ' . $linha['avaliacao_like'] . '</span>
+                    <span class="badge text-bg-primary rounded-pill"> Dislike: ' . $linha['avaliacao_dislike'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -403,7 +405,8 @@ class funcoes
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">Likes: ' . $linha['avaliacao_post'] . '</span>
+                    <span class="badge text-bg-primary rounded-pill"> Likes: ' . $linha['avaliacao_like'] . '</span>
+                    <span class="badge text-bg-primary rounded-pill"> Dislike: ' . $linha['avaliacao_dislike'] . '</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tags_associadas'] . '</span>
                     <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>

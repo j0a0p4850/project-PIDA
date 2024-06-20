@@ -7,7 +7,7 @@ $conecta = $conexao->conectar();
 
 if (isset($_POST["action"])) {
     $query = "
-        SELECT p.id_pergunta, p.pergunta_title, p.data_publicacao, p.status_pergunta, p.avaliacao_post, t.tag_name 
+        SELECT p.id_pergunta, p.pergunta_title, p.data_publicacao, p.status_pergunta, p.avaliacao_like, p.avaliacao_dislike, t.tag_name 
         FROM tb_pergunta p 
         INNER JOIN tb_pergunta_tags pt ON p.id_pergunta = pt.pergunta_id 
         INNER JOIN tb_tags t ON pt.tag_id = t.id_tags
@@ -44,7 +44,8 @@ if (isset($_POST["action"])) {
                     </div>
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_like'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Dislikes: '.$linha['avaliacao_dislike'] .'</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tag_name'] . '</span>
                     <span class="badge text-bg-primary"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>
@@ -60,7 +61,8 @@ if (isset($_POST["action"])) {
                    
                     <small>And some small print.</small>
                     <br>
-                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_post'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Likes: '.$linha['avaliacao_like'] .'</span>
+                    <span class="badge text-bg-primary rounded-pill">Dislikes: '.$linha['avaliacao_dislike'] .'</span>
                     <span class="badge text-bg-primary rounded-pill">' . $linha['tag_name'] . '</span>
                     <span class="badge text-bg-danger"> Status: ' . $linha['status_pergunta'] . '</span>
                 </a>

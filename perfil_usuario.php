@@ -62,6 +62,9 @@ if (!isset($_SESSION['login'])) {
                         <li class="nav-item">
                             <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="teste2.php" class="nav-link">Chatbot Simples</a>
+                        </li>
                     </ul>
                    
                 </div>

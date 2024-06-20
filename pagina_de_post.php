@@ -5,21 +5,21 @@ $func = new resultados();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resp_body = $_POST['resp_body'];
-    if (isset($_GET['id'])) {
-        if (isset($_SESSION['login'])) {
-            $id_user = $_SESSION['login'];
-            $id_post = $_GET['id'];
-            $func->Answer($resp_body, $id_post, $id_user);
+    if ($resp_body != '') {
+        if (isset($_GET['id'])) {
+            if (isset($_SESSION['login'])) {
+                $id_user = $_SESSION['login'];
+                $id_post = $_GET['id'];
+                $func->Answer($resp_body, $id_post, $id_user);
+            } else {
+                header('Location: login.php');
+            }
         } else {
-            header('Location: login.php');
+            echo 'Ocorreu algum erro, por favor tente novamente mais tarde';
         }
     } else {
-        echo 'Ocorreu algum erro, por favor tente novamente mais tarde';
+        echo 'Nao registrou nada';
     }
-
-
-
-
 
 }
 
@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+
     <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -41,8 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <script src="https://cdn.tiny.cloud/1/7jodojbng5amadhee2m4fr5wh2e1uxbzn8p07lrxngqhu81c/tinymce/7/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
     <style>
         .escondido {
@@ -102,22 +104,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .post {
             margin-top: 10px;
             height: fit-content;
-            width: 1020px;
+            max-height: 600px;
 
+            overflow-y: auto;
+
+            border: 1px solid #ccc;
+
+            padding: 10px;
 
         }
-        .coment_bnt{
+
+        .coment_bnt {
             margin-top: 13px;
         }
-        
-        .area_comentario_texto{
+
+        .area_comentario_texto {
             margin-left: 10rem;
             margin-top: 20px;
-            
+
         }
-        .tox{
+
+        .tox {
             width: 700px;
-            
+
         }
 
         .resp {
@@ -132,9 +141,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .display_resp {
-            margin-left: 100px;
-            margin-top: 30px;
-            width: 700px;
+
+            border: #333 0.5px solid;
+            margin-left: 2%;
+            width: 80%;
+            padding: 20px;
+        }
+
+        .botao-div {
+            padding-left: 15px;
+        }
+
+        .area_texto {
+            margin-left: 0px;
+            margin-top: 120px;
+
+        }
+
+        .area_texto button:enabled {
+            cursor: pointer;
+        }
+
+        .coment_bnt_de {
+            margin-left: 60px;
         }
 
         .area_comentario {
@@ -144,14 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
 
-        }
 
 
         .container_area_texto {
@@ -159,10 +181,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .area_texto {
-            width: 1020px;
         }
 
         .cabeca_post {
@@ -183,12 +201,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 300px;
         }
 
-        .comentario_resp {
+        /*.comentario_resp {
             display: contents;
-        }
+        }*/
 
         .botoes {
-            margin-left: 16rem;
+            margin-left: 6rem;
         }
 
         .corpo {
@@ -203,6 +221,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: 1px solid #ddd;
             border-radius: 5px;
             position: relative;
+        }
+
+        .ql-container.ql-snow {
+            height: 10rem;
         }
 
         .section:first-child {
@@ -233,15 +255,135 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .resp_section {
-            margin-left: 10rem;
-            width: 50%;
+            margin-left: 7rem;
+            width: 70%;
+            overflow-y: auto;
+            max-height: 300px;
+
+
+        }
+
+        .post_body {
+            margin-top: 30px;
+            border: #333 1px solid;
+            width: 750px;
+        }
+
+        .section_post_total {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .buttons a {
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .like-img {
+            height: 30px;
+
+        }
+
+        .bnt-like {
+            background-color: transparent;
+            /* Remove o fundo do botão */
+            border: none;
+            /* Remove a borda do botão */
+            padding: 0;
+            /* Remove o preenchimento interno do botão */
+            cursor: pointer;
+            float: left;
+        }
+
+        #editor-container {
+            height: 300px;
+        }
+
+        .bnt-dislike {
+            margin-left: 5px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+            height: auto;
+            transform: rotateX(180deg);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            /* Add position relative */
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 7px 0 0 7px;
+            /* Rounded corners for the left side */
+        }
+
+        .search-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 7px 7px 0;
+            /* Rounded corners for the right side */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-left: none;
+            /* Remove the left border to make it seamless */
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            z-index: 10;
+            color: #000;
+            width: 100%;
+            /* Make suggestions container same width as search container */
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .Titu {
+            margin-top: 5rem;
+            margin-left: 3rem;
         }
     </style>
 </head>
 
 <body>
 
-<header>
+    <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="index.php">Navbar</a>
@@ -255,14 +397,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                        </li>
+                        <?php
+                        if (isset($_SESSION['login'])) {
+                            echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                                </li>';
+                        } else {
+                            echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="cadastro.php">Entrar</a>
+                                </li>';
+                        }
+                        ?>
+
                         <li class="nav-item">
                             <a href="Pag_tags.php" class="nav-link">Tags</a>
                         </li>
                         <li class="nav-item">
                             <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="teste2.php" class="nav-link">Chatbot Simples</a>
                         </li>
                     </ul>
                     <div class="search-container">
@@ -277,64 +433,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </nav>
     </header>
 
-
-    <div class="container">
-        <?php
-
-
-        if (isset($_GET['id'])) {
-            $id_post = $_GET['id'];
-            $func->post_display($id_post);
-        }
-        ?>
-    </div>
+    <section class="section_post_total">
+        <section class="post_body">
+            <div class="container">
+                <?php
 
 
-    <div>
-        <?php
-        $func = new resultados();
-        if (isset($_GET['id']) && isset($_SESSION['login'])) {
-            $id_user = $_SESSION['login'];
-            $id_post = $_GET['id'];
-            $func->post_resp($id_post, $id_user);
-        }
-        ?>
-    </div>
+                if (isset($_GET['id'])) {
+                    $id_post = $_GET['id'];
+                    $func->post_display($id_post);
+                }
+                ?>
+            </div>
 
 
+            <div>
 
-   
+                <h3 class="Titu">Respostas</h3>
+                <?php
+                $func = new resultados();
+                if (isset($_GET['id']) && isset($_SESSION['login'])) {
+                    $id_user = $_SESSION['login'];
+                    $id_post = $_GET['id'];
+                    $func->post_resp($id_post, $id_user);
+                }
+                ?>
+            </div>
+        </section>
 
-    <script>
-        tinymce.init({
-            selector: 'textarea#id_teste',
-            height: 300,
-            menubar: 'insert edit view',
-            plugins: 'autolink charmap codesample',
-            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
-            mergetags_list: [
-                { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
-            ],
-            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-        });
+    </section>
 
-        tinymce.init({
-            selector: 'textarea.Comentario_resps',
-            height: 200,
-            plugins: 'autolink charmap codesample searchreplace',
-            toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
-            mergetags_list: [
-                { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
-            ],
-            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-        });
-    </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js">
         document.addEventListener('DOMContentLoaded', function () {
@@ -342,9 +471,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 
+    <!--INCREMENTO DE VOTO-->
     <script>
         const incrementBtn = document.getElementById('incrementBtn');
-        const decrementBtn = document.getElementById('decrementBtn');
 
 
         function incrementCounter() {
@@ -363,7 +492,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     .then(data => {
                         console.log('Resposta do servidor:', data);
                         if (data.status === 'success') {
-                            alert('Valor incrementado com sucesso!');
+                            alert('Curtida registrada');
                         } else {
                             alert('Erro ao incrementar valor: ' + data.message);
                         }
@@ -375,9 +504,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
+
         incrementBtn.addEventListener('click', incrementCounter);
+
     </script>
 
+    <script>
+        const decrementBtn = document.getElementById('decrementBtn');
+
+        function decrementCounter() {
+            const idPost = new URLSearchParams(window.location.search).get('id');
+            console.log('ID do Post:', idPost);
+
+            if (idPost) {
+                fetch('decrement.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'id=' + encodeURIComponent(idPost)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Resposta do servidor:', data);
+                        if (data.status === 'success') {
+                            alert('Descurtida registrada');
+                        } else {
+                            alert('Erro ao decrementar valor: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Erro:', error));
+            } else {
+                console.error('ID do Post não encontrado na URL');
+            }
+        }
+
+        decrementBtn.addEventListener('click', decrementCounter);
+    </script>
+
+
+    <!--MODAL PARA DENUNCIA-->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const cancelButton = document.getElementById('cancelButton');
@@ -443,37 +609,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 
-
+    <!--EXCLUSÃO DE COMENTARIO-->
     <script>
-        // Função para excluir o comentário via AJAX
+
         function excluirComentario(comentarioId) {
             $.ajax({
                 type: "POST",
-                url: "excluir_comentario.php", // Altere o nome do arquivo PHP conforme necessário
+                url: "excluir_comentario.php",
                 data: { comentarioId: comentarioId },
                 dataType: "json",
                 success: function (response) {
                     if (response.success) {
-                        // Exibir a mensagem de sucesso
-                        alert(response.message); // Você pode usar um modal ou outra forma de exibição
-                        // Aqui você pode atualizar a interface conforme necessário
+
+                        alert(response.message);
+
                     } else {
-                        // Exibir mensagem de erro, se necessário
+
                         alert(response.message);
                     }
                 },
                 error: function (xhr, status, error) {
-                    // Lidar com erros de requisição AJAX, se necessário
+
                     console.error("Erro na requisição AJAX: " + error);
                 }
             });
         }
 
-        // Exemplo de uso da função
-        // Chame essa função com o ID do comentário que você deseja excluir
+
 
     </script>
 
+    <!--EXCLUSÃO DE POST-->
     <script>
         $(document).ready(function () {
             $('.delete-post').click(function () {
@@ -499,25 +665,114 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 
-    <!-- Adicione antes do fechamento do </body> para incluir o JavaScript -->
-<script>
-    // Função para exibir ou ocultar a textarea de comentário
-    function toggleCommentForm(comentarioId) {
-        var commentForm = document.getElementById('commentForm_' + comentarioId);
-        if (commentForm.style.display === 'none') {
-            commentForm.style.display = 'block';
-        } else {
-            commentForm.style.display = 'none';
-        }
-    }
+    <!--CONFIRMAÇÃO CANCELAR-->
+    <script>
 
-    // Função para exibir modal de confirmação ao excluir um comentário ou resposta
-    function confirmDelete(id) {
-        if (confirm('Tem certeza que deseja excluir este comentário/resposta?')) {
-            window.location.href = 'excluir_processar_comentario.php?comentario_id=' + id;
+        function toggleCommentForm(comentarioId) {
+            var commentForm = document.getElementById('commentForm_' + comentarioId);
+            if (commentForm.style.display === 'none') {
+                commentForm.style.display = 'block';
+            } else {
+                commentForm.style.display = 'none';
+            }
         }
-    }
-</script>
+
+
+        function confirmDelete(id, tipo) {
+            var mensagem = (tipo === 'comentario') ? 'Tem certeza que deseja excluir este comentário?' : 'Tem certeza que deseja excluir esta resposta?';
+            if (confirm(mensagem)) {
+                if (tipo === 'comentario') {
+                    window.location.href = 'excluir_processar_comentario.php?comentario_id=' + id;
+                } else if (tipo === 'resposta') {
+                    window.location.href = 'excluir_processar_resp.php?resp_id=' + id;
+                }
+            }
+        }
+    </script>
+
+    <!--BARRA DE PESQUISA-->
+    <script>
+
+        function buscarSugestoes(inputVal) {
+            if (inputVal.length > 0) {
+                fetch('livesearch.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'input=' + encodeURIComponent(inputVal)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const suggestionsContainer = document.getElementById('suggestions');
+                        suggestionsContainer.innerHTML = '';
+                        data.forEach(sugestao => {
+                            const div = document.createElement('div');
+                            div.textContent = sugestao;
+                            div.classList.add('suggestion-item');
+                            div.onclick = function () {
+                                document.querySelector('.search-input').value = this.textContent;
+                                suggestionsContainer.innerHTML = '';
+                            };
+                            suggestionsContainer.appendChild(div);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+        // Função para realizar a pesquisa
+        function realizarPesquisa(inputVal) {
+            if (inputVal.length > 0) {
+                window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);
+            }
+        }
+    </script>
+
+    <!--EDITOR DE TEXTO-->
+    <script>
+        var quill = new Quill('#editor-container-resposta', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                    [{ size: [] }],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                    ['code', 'link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        var quillComentario = new Quill('#editor-container-comentario', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                    [{ size: [] }],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                    ['code', 'link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        function prepareSubmissionComent() {
+            var postBody = document.querySelector('input[name=comment_body]');
+            postBody.value = quillComentario.root.innerHTML.trim();
+        }
+
+        function prepareSubmission() {
+            var postBody = document.querySelector('input[name=resp_body]');
+            postBody.value = quill.root.innerHTML.trim();
+        }
+    </script>
+
+
 
 
 </body>

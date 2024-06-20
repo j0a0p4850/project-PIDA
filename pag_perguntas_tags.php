@@ -20,17 +20,13 @@ include "funcoes_result.php";
     <link rel="stylesheet" href="style.css">
     <title>Minha Página</title>
     <style>
-        /* Estilos gerais */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        /* Cabeçalho */
 
-
-        /* Seção de perguntas e respostas */
         main {
             padding: 20px;
         }
@@ -64,7 +60,7 @@ include "funcoes_result.php";
             margin-left: 300px;
         }
 
-        /* Painel lateral */
+
         aside {
             background-color: #eee;
             padding: 10px;
@@ -73,6 +69,66 @@ include "funcoes_result.php";
         .share {
             border: 2px solid black;
         }
+
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            /* Add position relative */
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 7px 0 0 7px;
+            /* Rounded corners for the left side */
+        }
+
+        .search-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 7px 7px 0;
+            /* Rounded corners for the right side */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-left: none;
+            /* Remove the left border to make it seamless */
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            z-index: 10;
+            color: #000;
+            width: 100%;
+            /* Make suggestions container same width as search container */
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 
@@ -80,7 +136,7 @@ include "funcoes_result.php";
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="index.php">Navbar</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -91,41 +147,36 @@ include "funcoes_result.php";
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                        </li>
-                        <!--
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Dropdown
-                            </a>
-                            
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>-->
+                        <?php
+                        if (isset($_SESSION['login'])) {
+                            echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                                </li>';
+                        } else {
+                            echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="cadastro.php">Entrar</a>
+                                </li>';
+                        }
+                        ?>
                         <li class="nav-item">
                             <a href="Pag_tags.php" class="nav-link">Tags</a>
                         </li>
                         <li class="nav-item">
                             <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="teste2.php" class="nav-link">Chatbot Simples</a>
+                        </li>
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="text" id="live_search" placeholder="Search"
-                            aria-label="Search">
-                        <div id="searchresult">
-
-
-                        </div>
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                            oninput="buscarSugestoes(this.value)">
+                        <button type="button" class="search-button"
+                            onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                        <div class="suggestions-container" id="suggestions"></div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -133,30 +184,28 @@ include "funcoes_result.php";
 
     <div class="card c1" style="width: 18rem;">
         <div class="card-body">
-            <h5 class="card-title">Filtros</h5>
+            <h5 class="card-title">Filtrar</h5>
             <div>
                 <br>
             </div>
-
             <ul class="list-group">
                 <li class="list-group-item">
-                    <div class="btn-group dropup share" id="status">
-                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Status
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button class="dropdown-item" type="button">Todos</button></li>
-                            <li><button class="dropdown-item" type="button">Abertos</button></li>
-                            <li><button class="dropdown-item" type="button">Fechadas</button></li>
-                        </ul>
+                    <div id="status" style="height: 180px; overflow-y: auto; overflow-x: hidden;">
+                        <input class="common_selector status" type="radio" name="status" id="abertos" value="Aberta">
+                        <label for="abertos">Abertos</label><br>
+                        <input class="common_selector status" type="radio" name="status" id="fechados" value="Fechada">
+                        <label for="fechados">Fechadas</label><br>
                     </div>
                 </li>
-                <li class="list-group-item">
+                <?php
+
+                $func = new resultados();
+                $func->show_tags();
+                ?>
                 </li>
                 <li class="list-group-item">
                     <h4>Data</h4>
-                    <select name="pets" id="pet-select">
+                    <select name="data_post" id="data_post" class="common_selector">
                         <option value="">Escolha a data</option>
                         <option value="2022">2022</option>
                         <option value="2023">2023</option>
@@ -164,12 +213,10 @@ include "funcoes_result.php";
                     </select>
                     <span id="valorAno"></span>
                 </li>
-                <li class="list-group-item"><button type="button" id="btnFiltrar" class="btn btn-info"
-                        data-bs-dismiss="modal">Filtrar</button></li>
-
+                <button id="reset_filters" class="btn btn-secondary">Resetar Filtros</button>
+                </li>
             </ul>
         </div>
-
     </div>
 
     <main>
@@ -185,6 +232,15 @@ include "funcoes_result.php";
 
 
         ?>
+
+        </div>
+    </main>
+
+    <main>
+        <div class="col-md-9">
+            <div class="filter_data">
+
+            </div>
     </main>
 
     <script>
@@ -237,6 +293,86 @@ include "funcoes_result.php";
             })
         })
     </script>
+
+    <script>
+
+        function buscarSugestoes(inputVal) {
+            if (inputVal.length > 0) {
+                fetch('livesearch.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'input=' + encodeURIComponent(inputVal)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const suggestionsContainer = document.getElementById('suggestions');
+                        suggestionsContainer.innerHTML = '';
+                        data.forEach(sugestao => {
+                            const div = document.createElement('div');
+                            div.textContent = sugestao;
+                            div.classList.add('suggestion-item');
+                            div.onclick = function () {
+                                document.querySelector('.search-input').value = this.textContent;
+                                suggestionsContainer.innerHTML = '';
+                            };
+                            suggestionsContainer.appendChild(div);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+
+        function realizarPesquisa(inputVal) {
+            if (inputVal.length > 0) {
+                window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            filter_data();
+            function filter_data() {
+                $('.filter_data').html('<div id="loading" style="" ></div>');
+                var action = 'fetch_data';
+                var tags = get_filter('tags');
+                var status = get_filter('status');
+                var data_post = $('#data_post').val();
+                $.ajax({
+                    url: "fetch_data.php",
+                    method: "POST",
+                    data: { action: action, tags: tags, status: status, data_post: data_post },
+                    success: function (data) {
+                        $('.filter_data').html(data);
+                    }
+                });
+            }
+
+            function get_filter(class_name) {
+                var filter = [];
+                $('.' + class_name + ':checked').each(function () {
+                    filter.push($(this).val());
+                });
+                return filter;
+            }
+
+            $('.common_selector').on('click change', function () {
+                filter_data();
+            });
+
+            $('#reset_filters').click(function () {
+                $('.common_selector').prop('checked', false);
+                $('#data_post').val('');
+                filter_data();
+            });
+        });
+    </script>
+
 </body>
 
 </html>

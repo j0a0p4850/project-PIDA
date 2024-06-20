@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,12 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <style>
-         body {
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
-       
+
 
         /* Cabeçalho */
         header {
@@ -44,14 +45,17 @@
 
             display: flex;
             flex-wrap: wrap;
-            gap: 20px; /* Espaçamento entre os cartões */
-            max-width: 950px; /* Largura máxima dos cartões */
-            margin: 40px auto; /* Centraliza horizontalmente */
-            border: 3px black solid;
+            gap: 20px;
+            
+            max-width: 950px;
+           
+            margin: 40px auto;
+            
         }
 
         .card {
-            width: calc(33.33% - 20px); /* Distribui em três colunas */
+            width: calc(33.33% - 20px);
+            /* Distribui em três colunas */
             margin-top: 10px;
             margin-bottom: 10px;
             margin-left: 5px;
@@ -88,18 +92,37 @@
         main {
             padding: 20px;
         }
-
         .search-container {
-            position: relative;
-            width: 300px;
             display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative; /* Add position relative */
         }
 
         .search-input {
-            width: 100%;
+            flex: 1;
             padding: 10px;
             font-size: 16px;
-            border-radius: 7px;
+            border: 1px solid #ddd;
+            border-radius: 7px 0 0 7px; /* Rounded corners for the left side */
+        }
+
+        .search-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 7px 7px 0; /* Rounded corners for the right side */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-left: none; /* Remove the left border to make it seamless */
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
         }
 
         .suggestions-container {
@@ -111,6 +134,7 @@
             border: 1px solid #ddd;
             z-index: 10;
             color: #000;
+            width: 100%; /* Make suggestions container same width as search container */
         }
 
         .suggestion-item {
@@ -124,84 +148,105 @@
     </style>
     <title>Document</title>
 </head>
-<body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="index.php">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.php">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="Pag_tags.php" class="nav-link">Tags</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
-                        </li>
-                    </ul>
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Pesquisar..."
-                            oninput="buscarSugestoes(this.value)">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        <div class="suggestions-container" id="suggestions">
 
-                        </div>
-                        
-                    </div>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.php">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                    </li>
+                    <?php
+                    if (isset($_SESSION['login'])) {
+                        echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                                </li>';
+                    } else {
+                        echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="cadastro.php">Entrar</a>
+                                </li>';
+                    }
+                    ?>
+                    <li class="nav-item">
+                        <a href="Pag_tags.php" class="nav-link">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="teste2.php" class="nav-link">Chatbot Simples</a>
+                    </li>
+                </ul>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..."
+                        oninput="buscarSugestoes(this.value)">
+                    <button type="button" class="search-button"
+                        onclick="realizarPesquisa(document.getElementById('searchInput').value)">Pesquisar</button>
+                    <div class="suggestions-container" id="suggestions"></div>
                 </div>
             </div>
-        </nav>
-    <div class="card-container">
-            <?php
-            include 'funcoes_result.php';
-
-            $func = new resultados();
-            $func->display_tags_pag_tags();
-            ?>
         </div>
+    </nav>
+    <div class="card-container">
+        <?php
+        include 'funcoes_result.php';
+
+        $func = new resultados();
+        $func->display_tags_pag_tags();
+        ?>
+    </div>
 
     </div>
 
     <script>
-        function buscarSugestoes(inputVal) {
-            if (inputVal.length > 0) {
-                fetch('livesearch.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'input=' + encodeURIComponent(inputVal)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const suggestionsContainer = document.getElementById('suggestions');
+
+function buscarSugestoes(inputVal) {
+    if (inputVal.length > 0) {
+        fetch('livesearch.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'input=' + encodeURIComponent(inputVal)
+        })
+            .then(response => response.json())
+            .then(data => {
+                const suggestionsContainer = document.getElementById('suggestions');
+                suggestionsContainer.innerHTML = '';
+                data.forEach(sugestao => {
+                    const div = document.createElement('div');
+                    div.textContent = sugestao;
+                    div.classList.add('suggestion-item');
+                    div.onclick = function () {
+                        document.querySelector('.search-input').value = this.textContent;
                         suggestionsContainer.innerHTML = '';
-                        data.forEach(sugestao => {
-                            const div = document.createElement('div');
-                            div.textContent = sugestao;
-                            div.classList.add('suggestion-item');
-                            div.onclick = function () {
-                                document.querySelector('.search-input').value = this.textContent;
-                                suggestionsContainer.innerHTML = '';
-                            };
-                            suggestionsContainer.appendChild(div);
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                document.getElementById('suggestions').innerHTML = '';
-            }
-        }
-    </script>
+                    };
+                    suggestionsContainer.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        document.getElementById('suggestions').innerHTML = '';
+    }
+}
+
+// Função para realizar a pesquisa
+function realizarPesquisa(inputVal) {
+    if (inputVal.length > 0) {
+        window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);
+    }
+}
+</script>
+
 
     <script>
         $(document).ready(function () {
@@ -242,4 +287,5 @@
         });
     </script>
 </body>
+
 </html>

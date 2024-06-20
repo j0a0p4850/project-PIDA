@@ -1,132 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TechQA - Sobre Nós</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSite - Início</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Estilos CSS personalizados */
+        /* Estilos específicos para a página inicial */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-        }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .box {
-            width: 300px;
-            height: 300px;
-            margin: 10px;
-            padding: 20px;
-            background-color: white;
-            border: 1px solid #ccc;
-            overflow-y: auto;
-        }
-
-        .box p {
-            margin: 0;
-        }
-
-        .button-container {
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px 0;
-        }
-
-        .footer h5 {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .footer a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .footer .col {
-            margin-bottom: 20px;
-        }
-
-        .social {
-            display: flex;
-            float: left;
-        }
-
-        .options {
-            margin-left: 8px;
-        }
-
-        /* Estilos para o cabeçalho */
-        header {
-            background-color: #f8f9fa;
-            color: #000;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Estilos para o menu principal */
-        nav {
-            background-color: #444;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            display: inline-block;
-            margin-right: 20px;
-        }
-
-        /* Estilos para a seção principal */
-        main {
-            padding: 20px;
         }
 
         .search-container {
-            position: relative;
-            width: 300px;
             display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative; /* Add position relative */
         }
 
         .search-input {
-            width: 100%;
+            flex: 1;
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
-            border-radius: 7px 0 0 7px;
+            border-radius: 7px 0 0 7px; /* Rounded corners for the left side */
         }
 
         .search-button {
@@ -135,10 +40,10 @@
             border: 1px solid #ddd;
             background-color: #007bff;
             color: white;
-            border-radius: 0 7px 7px 0;
+            border-radius: 0 7px 7px 0; /* Rounded corners for the right side */
             cursor: pointer;
             transition: background-color 0.3s ease;
-            border-left: none;
+            border-left: none; /* Remove the left border to make it seamless */
         }
 
         .search-button:hover {
@@ -154,7 +59,7 @@
             border: 1px solid #ddd;
             z-index: 10;
             color: #000;
-            width: 100%;
+            width: 100%; /* Make suggestions container same width as search container */
         }
 
         .suggestion-item {
@@ -165,11 +70,155 @@
         .suggestion-item:hover {
             background-color: #f0f0f0;
         }
+    
+
+        .jumbotron {
+            background-image: url('background.jpg');
+            background-size: cover;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .jumbotron h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .jumbotron p {
+            font-size: 1.5rem;
+            /*text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);*/
+        }
+
+        .feature-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            color: black;
+        }
+
+        .feature-box h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-box p {
+            font-size: 1.2rem;
+            color: black;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin: 0 10px;
+        }
+
+        .social-icons a:hover {
+            color: #ffc107;
+        }
+
+        .personas-section {
+            background-color: #fff;
+            padding: 50px 0;
+        }
+
+        .persona-box {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .persona-box img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .persona-box h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .persona-box p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .company-logo {
+            width: 150px;
+            margin: 20px;
+            transition: transform 0.3s;
+        }
+
+        .company-logo:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .jumbotron {
+                height: 400px;
+            }
+
+            .jumbotron h1 {
+                font-size: 2.5rem;
+            }
+
+            .jumbotron p {
+                font-size: 1.2rem;
+            }
+
+            .company-logo {
+                width: 100px;
+                margin: 10px;
+            }
+        }
+
+        .carousel-personas .carousel-inner {
+            transition: transform 0.5s ease; /* Suaviza a transição */
+        }
+
+        .carousel-personas .carousel-item {
+            transition: opacity 0.5s ease; /* Suaviza a transição de opacidade */
+        }
+        p{
+            color: black;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Barra de navegação -->
+
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">TechQA</a>
@@ -192,6 +241,9 @@
                     <li class="nav-item">
                         <a href="pagina_de_resultados.php" class="nav-link">Página de Perguntas</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="teste2.php" class="nav-link">Chatbot Simples</a>
+                    </li>
                 </ul>
                 <!-- Container para o formulário de pesquisa -->
                 <div class="search-container">
@@ -205,65 +257,222 @@
         </div>
     </nav>
 
-    <!-- Informações sobre a TechQA -->
-    <main>
+    <!-- Jumbotron -->
+    <section class="jumbotron">
         <div class="container">
-            <h1>Sobre a TechQA</h1>
-        </div>
-        <div class="container">
-            <div class="box">
-                <h2>Nossa Missão</h2>
-                <p>Nossa missão na TechQA é fornecer soluções de segurança cibernética, análise de dados e recursos educacionais de qualidade para profissionais de tecnologia em todo o mundo.</p>
-            </div>
-            <div class="box">
-                <h2>Nossos Serviços</h2>
-                <p>Oferecemos consultoria especializada em segurança cibernética, treinamentos avançados em análise de dados e uma plataforma de aprendizado com cursos práticos em tecnologia.</p>
-            </div>
-            <div class="box">
-                <h2>Nossa Comunidade</h2>
-                <p>Construímos uma comunidade global de profissionais de TI que compartilham conhecimentos, discutem tendências emergentes e colaboram para resolver desafios tecnológicos.</p>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h1>Bem-vindo ao TechSite</h1>
+                    <p>Explorando o futuro da tecnologia e conectando pessoas para compartilhar conhecimentos.</p>
+                    <a href="#" class="btn btn-primary btn-lg">Saiba Mais</a>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <!-- Rodapé -->
+    <!-- Features -->
+    <section class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Tecnologias Avançadas</h3>
+                    <p>Descubra as últimas tendências em tecnologia que estão moldando o futuro.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Serviços Personalizados</h3>
+                    <p>Oferecemos soluções adaptadas às necessidades específicas de cada cliente.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Compartilhamento de Conhecimentos</h3>
+                    <p>Facilitamos a troca de informações e experiências entre profissionais e entusiastas de tecnologia.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Inovação Contínua</h3>
+                    <p>Estamos sempre atualizados com as últimas inovações para oferecer o melhor aos nossos usuários.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Comunidade Ativa</h3>
+                    <p>Junte-se a uma comunidade vibrante de tecnólogos que ajudam e aprendem juntos.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <h3>Recursos Educacionais</h3>
+                    <p>Acesse uma vasta gama de recursos educativos para aprimorar suas habilidades tecnológicas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personas e Empresas -->
+    <section class="personas-section">
+        <div class="container">
+            <h3 class="text-center mb-4">Personas e Empresas</h3>
+            <div id="personasCarousel" class="carousel slide carousel-personas" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/face1.jpeg" alt="Persona 1">
+                                    <h4>João Silva</h4>
+                                    <p>Desenvolvedor de Software</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/face2.jpeg" alt="Persona 2">
+                                    <h4>Maria Souza</h4>
+                                    <p>Especialista em Segurança</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/man.jpeg" alt="Persona 3">
+                                    <h4>Pedro Costa</h4>
+                                    <p>Engenheiro de Redes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/man2.jpeg" alt="Persona 4">
+                                    <h4>Lucas Oliveira</h4>
+                                    <p>Analista de Dados</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/mulhe.jpeg" alt="Persona 5">
+                                    <h4>Ana Pereira</h4>
+                                    <p>Desenvolvedora Frontend</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="persona-box">
+                                    <img src="imgs/man3.jpeg" alt="Persona 6">
+                                    <h4>Carlos Santos</h4>
+                                    <p>Especialista em IA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#personasCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#personasCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div id="empresasCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="imgs/apple-removebg-preview.png" alt="Empresa 1" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/educ-removebg-preview.png" alt="Empresa 2" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/claro-removebg-preview.png" alt="Empresa 3" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/eventos-removebg-preview.png" alt="Empresa 4" class="company-logo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="imgs/meta-removebg-preview.png" alt="Empresa 5" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/google-removebg-preview.png" alt="Empresa 6" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/celebro-removebg-preview.png" alt="Empresa 7" class="company-logo">
+                            </div>
+                            <div class="col-md-3">
+                                <img src="imgs/pp-removebg-preview.png" alt="Empresa 8" class="company-logo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#empresasCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#empresasCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
-                <div class="col">
-                    <h5>Links Úteis</h5>
-                    <ul>
-                        <li><a href="#">Sobre nós</a></li>
-                        <li><a href="#">Contato</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                    </ul>
-                </div>
-                <div class="col">
-                    <h5>Redes Sociais</h5>
-                    <div class="social">
-                        <a href="#">Github</a>
-                        <br>
-                        <a href="#">LinkedIn</a>
-                        <br>
-                        <a href="#">Instagram</a>
+                <div class="col-md-4">
+                    <h5>TechSite</h5>
+                    <p>Sua fonte confiável para inovação em tecnologia.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
-                <div class="col">
-                    <form>
-                        <input type="email" placeholder="Digite seu e-mail">
-                        <button type="submit">Novas informações</button>
-                    </form>
+                <div class="col-md-4">
+                    <h5>Serviços</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Desenvolvimento Web</a></li>
+                        <li><a href="#">Consultoria em TI</a></li>
+                        <li><a href="#">Segurança Cibernética</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contato</h5>
+                    <p>Email: info@techsite.com</p>
+                    <p>Telefone: +123456789</p>
                 </div>
             </div>
+            <hr>
+            <p class="text-center">© 2024 TechSite. Todos os direitos reservados.</p>
         </div>
     </footer>
 
-    <!-- Scripts do Bootstrap -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-
     <script>
+        // Ajusta o tempo de intervalo para o carrossel de personas
+        var personasCarousel = document.querySelector('#personasCarousel');
+        var carouselInstance = new bootstrap.Carousel(personasCarousel, {
+            interval: 2000, // Tempo de intervalo em milissegundos (2 segundos)
+            ride: 'carousel'
+        });
+    </script>
+
+<script>
         function buscarSugestoes(inputVal) {
             if (inputVal.length > 0) {
                 fetch('livesearch.php', {
@@ -294,7 +503,6 @@
             }
         }
 
-        // Função para realizar a pesquisa
         function realizarPesquisa(inputVal) {
             if (inputVal.length > 0) {
                 window.location.href = 'pag_result_pesquisa.php?termo=' + encodeURIComponent(inputVal);

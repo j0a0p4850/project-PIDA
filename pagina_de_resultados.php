@@ -171,14 +171,28 @@ session_start();
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="perfil_usuario.php">Perfil</a>
-                        </li>
+                        <?php
+                            if(isset($_SESSION['login'])){
+                                echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="perfil_usuario.php">Perfil</a>
+                                </li>';
+                            }
+                            else{
+                                echo '
+                                <li class="nav-item">
+                                    <a class="nav-link" href="cadastro.php">Entrar</a>
+                                </li>';
+                            }
+                        ?>
                         <li class="nav-item">
                             <a href="Pag_tags.php" class="nav-link">Tags</a>
                         </li>
                         <li class="nav-item">
                             <a href="pagina_de_resultados.php" class="nav-link">Pagina de perguntas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="teste2.php" class="nav-link">Chatbot Simples</a>
                         </li>
                     </ul>
                     <div class="search-container">

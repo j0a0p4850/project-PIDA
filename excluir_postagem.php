@@ -3,11 +3,16 @@ include 'funcoes_result.php';
 $usuario = new resultados();
 
 if (isset($_GET['postagem_id'])) {
-    $postId = $_GET['postagem_id']; 
-    $usuario->excluir_Post($postId); 
+    $postId = $_GET['postagem_id'];
+    $usuario->excluir_Post($postId);
 
-    echo json_encode(['status' => 'success', 'message' => 'Post excluído com sucesso']);
+    echo "<script>
+    alert('Post excluído com sucesso');
+    setTimeout(function () {
+        window.history.go(-2);
+    }, 200); 
+</script>";
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'ID do post não especificado']);
+    echo "<script>alert('Algo deu errado, por favor tente novamente')</script>";
 }
 ?>
